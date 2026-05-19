@@ -41,8 +41,8 @@ export default function AdvancedPrediction() {
 
       <div className="grid lg:grid-cols-2 gap-12">
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="glass-card p-6 grid grid-cols-2 gap-4">
-            <h2 className="col-span-2 text-xl font-semibold border-b border-white/10 pb-2 mb-2">Patient Bio-Markers</h2>
+          <div className="glass-card p-4 sm:p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <h2 className="col-span-1 sm:col-span-2 text-xl font-semibold border-b border-white/10 pb-2 mb-2">Patient Bio-Markers</h2>
             <InputField label="Age" name="age" value={formData.age} onChange={handleChange} />
             <SelectField label="Sex" name="sex" value={formData.sex} onChange={handleChange} options={["Female", "Male"]} />
             <SelectField label="Chest Pain Type" name="cp" value={formData.cp} onChange={handleChange} options={["Typical Angina", "Atypical Angina", "Non-anginal Pain", "Asymptomatic"]} />
@@ -126,7 +126,7 @@ function InputField({ label, name, value, onChange, step = "1" }) {
   return (
     <div>
       <label className="block text-xs text-slate-500 mb-1 font-bold uppercase">{label}</label>
-      <input type="number" name={name} value={value} onChange={onChange} step={step} className="w-full bg-slate-900/50 border border-white/5 rounded-lg p-2 focus:border-health-500 transition-colors outline-none" />
+      <input type="number" name={name} value={value} onChange={onChange} step={step} className="w-full bg-slate-900/50 border border-white/5 rounded-lg py-3 px-4 focus:border-health-500 transition-colors outline-none" />
     </div>
   );
 }
@@ -135,7 +135,7 @@ function SelectField({ label, name, value, onChange, options }) {
   return (
     <div>
       <label className="block text-xs text-slate-500 mb-1 font-bold uppercase">{label}</label>
-      <select name={name} value={value} onChange={onChange} className="w-full bg-slate-900/50 border border-white/5 rounded-lg p-2 focus:border-health-500 outline-none">
+      <select name={name} value={value} onChange={onChange} className="w-full bg-slate-900/50 border border-white/5 rounded-lg py-3 px-4 focus:border-health-500 outline-none">
         {options.map((opt, i) => <option key={i} value={i}>{opt}</option>)}
       </select>
     </div>

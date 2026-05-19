@@ -3,8 +3,8 @@ import joblib
 import numpy as np
 import pandas as pd
 import shap
-from backend.models.schemas import BasicForm, AdvancedForm
-from backend.lib.supabase import supabase
+from models.schemas import BasicForm, AdvancedForm
+from lib.supabase import supabase
 import os
 
 router = APIRouter()

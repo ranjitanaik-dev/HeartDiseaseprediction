@@ -1,7 +1,7 @@
 import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from backend.routes import predict, history
+from routes import predict, history
 from dotenv import load_dotenv
 
 load_dotenv()

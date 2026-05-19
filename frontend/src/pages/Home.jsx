@@ -22,7 +22,7 @@ export default function Home() {
           <div className="absolute bottom-[-10%] left-[-10%] w-[800px] h-[800px] bg-blue-600/15 rounded-full blur-[150px] mix-blend-screen opacity-40" />
         </div>
 
-        <div className="container mx-auto px-6 z-10 grid lg:grid-cols-2 gap-16 items-center">
+        <div className="container mx-auto px-4 sm:px-6 z-10 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -35,19 +35,19 @@ export default function Home() {
               </span>
               AI-Powered Preventive Healthcare
             </div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-black mb-6 leading-[1.1] tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 sm:mb-6 leading-[1.1] tracking-tight">
               Your Heart Deserves <br className="hidden md:block"/> Early Care, <br className="hidden md:block"/>
               <span className="bg-gradient-to-r from-rose-400 to-pink-500 bg-clip-text text-transparent">Not Late Regret.</span>
             </h1>
-            <p className="text-lg md:text-xl text-slate-300 mb-10 max-w-xl leading-relaxed font-light">
+            <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-8 sm:mb-10 max-w-xl leading-relaxed font-light">
               AI-powered heart risk assessment platform helping people understand their heart health through smart lifestyle and clinical analysis.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link to="/register" className="px-8 py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-full font-bold text-lg transition-all transform hover:-translate-y-1 shadow-[0_0_30px_rgba(225,29,72,0.4)] flex items-center justify-center gap-2 group">
+            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <Link to="/register" className="w-full sm:w-auto px-8 py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-full font-bold text-lg transition-all transform hover:-translate-y-1 shadow-[0_0_30px_rgba(225,29,72,0.4)] flex items-center justify-center gap-2 group">
                 Start Health Check
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <a href="#how-it-works" className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full font-bold text-lg transition-all text-center backdrop-blur-md flex items-center justify-center gap-2 text-slate-200">
+              <a href="#how-it-works" className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full font-bold text-lg transition-all text-center backdrop-blur-md flex items-center justify-center gap-2 text-slate-200">
                 Learn More
               </a>
             </div>
@@ -110,18 +110,18 @@ export default function Home() {
       {/* 2. TRUST / AWARENESS SECTION */}
       <section className="py-24 bg-slate-900 relative border-y border-white/5 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-rose-900/10 via-slate-900/0 to-slate-900/0"></div>
-        <div className="container mx-auto px-6 relative z-10">
-          <div className="max-w-4xl mx-auto text-center mb-16">
+        <div className="container mx-auto px-4 sm:px-6 relative z-10">
+          <div className="max-w-4xl mx-auto text-center mb-12 sm:mb-16">
             <HeartPulse className="w-12 h-12 text-rose-500 mx-auto mb-6 opacity-80" />
-            <h2 className="text-3xl md:text-5xl font-bold mb-8 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold mb-6 sm:mb-8 leading-tight">
               Millions of people ignore early symptoms until it becomes serious.
             </h2>
-            <p className="text-xl text-slate-300 font-light italic">
+            <p className="text-lg sm:text-xl text-slate-300 font-light italic">
               "Early awareness can save lives. Our mission is to provide you with the insights you need to take proactive steps towards a healthier, longer life."
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-4xl mx-auto">
             <StatCounter end="10K+" label="Users Screened" />
             <StatCounter end="98%" label="AI Accuracy" />
             <StatCounter end="24/7" label="Symptom Analysis" />
@@ -131,14 +131,14 @@ export default function Home() {
       </section>
 
       {/* 3. FEATURES SECTION */}
-      <section id="features" className="py-24 relative">
-        <div className="container mx-auto px-6">
-          <div className="text-center mb-20 max-w-3xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold mb-6">Advanced Healthcare Intelligence</h2>
-            <p className="text-lg text-slate-400 font-light">A comprehensive suite of tools designed to provide clarity, safety, and actionable insights about your heart health.</p>
+      <section id="features" className="py-20 sm:py-24 relative">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="text-center mb-16 sm:mb-20 max-w-3xl mx-auto">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">Advanced Healthcare Intelligence</h2>
+            <p className="text-base sm:text-lg text-slate-400 font-light">A comprehensive suite of tools designed to provide clarity, safety, and actionable insights about your heart health.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
             <FeatureCard 
               icon={<HeartPulse />} title="Basic Lifestyle Risk Check"
               description="Quick, non-invasive assessment based on daily habits and metrics."
@@ -199,22 +199,22 @@ export default function Home() {
       </section>
 
       {/* 5. AI HEALTH INSIGHTS SECTION */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-20 sm:py-32 relative overflow-hidden">
         {/* Background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[500px] bg-rose-600/5 rounded-full blur-[100px] pointer-events-none" />
         
-        <div className="container mx-auto px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold mb-6 leading-tight">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6 leading-tight">
                 Understand Your Heart <br/> With <span className="text-rose-500">Precision AI.</span>
               </h2>
-              <p className="text-lg text-slate-300 font-light mb-8">
+              <p className="text-base sm:text-lg text-slate-300 font-light mb-6 sm:mb-8">
                 CardioSense doesn't just give you a number. Our Explainable AI breaks down exactly which factors (like cholesterol, stress, or age) are contributing most to your risk, empowering you with knowledge.
               </p>
               <ul className="space-y-5 mb-10">

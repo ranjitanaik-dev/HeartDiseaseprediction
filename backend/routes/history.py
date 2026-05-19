@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
-from backend.models.schemas import SymptomRequest
-from backend.lib.supabase import supabase
+from models.schemas import SymptomRequest
+from lib.supabase import supabase
 from typing import List, Dict
 import os
 

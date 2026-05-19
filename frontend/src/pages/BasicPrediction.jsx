@@ -53,25 +53,25 @@ export default function BasicPrediction() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="glass-card p-6 space-y-4">
             <h2 className="text-xl font-semibold border-b border-white/10 pb-2 mb-4">Personal Details</h2>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm text-slate-400 mb-1">Age</label>
-                <input type="number" name="age" value={formData.age} onChange={handleChange} className="w-full bg-slate-800 rounded-lg p-2 border border-white/10" />
+                <input type="number" name="age" value={formData.age} onChange={handleChange} className="w-full bg-slate-800 rounded-lg py-3 px-4 border border-white/10" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-1">Gender</label>
-                <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-slate-800 rounded-lg p-2 border border-white/10">
+                <select name="gender" value={formData.gender} onChange={handleChange} className="w-full bg-slate-800 rounded-lg py-3 px-4 border border-white/10">
                   <option value={1}>Male</option>
                   <option value={0}>Female</option>
                 </select>
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-1">Height (cm)</label>
-                <input type="number" name="height_cm" value={formData.height_cm} onChange={handleChange} className="w-full bg-slate-800 rounded-lg p-2 border border-white/10" />
+                <input type="number" name="height_cm" value={formData.height_cm} onChange={handleChange} className="w-full bg-slate-800 rounded-lg py-3 px-4 border border-white/10" />
               </div>
               <div>
                 <label className="block text-sm text-slate-400 mb-1">Weight (kg)</label>
-                <input type="number" name="weight_kg" value={formData.weight_kg} onChange={handleChange} className="w-full bg-slate-800 rounded-lg p-2 border border-white/10" />
+                <input type="number" name="weight_kg" value={formData.weight_kg} onChange={handleChange} className="w-full bg-slate-800 rounded-lg py-3 px-4 border border-white/10" />
               </div>
             </div>
           </div>
@@ -157,7 +157,7 @@ function SelectGroup({ label, name, value, onChange, options }) {
   return (
     <div>
       <label className="block text-sm text-slate-400 mb-1">{label}</label>
-      <select name={name} value={value} onChange={onChange} className="w-full bg-slate-800 rounded-lg p-2 border border-white/10">
+      <select name={name} value={value} onChange={onChange} className="w-full bg-slate-800 rounded-lg py-3 px-4 border border-white/10">
         {options.map((opt, i) => <option key={i} value={i}>{opt}</option>)}
       </select>
     </div>

@@ -97,7 +97,7 @@ export default function Navbar() {
                 <a 
                   key={link.name}
                   href={link.path.startsWith('#') ? link.path : undefined}
-                  className="text-lg font-medium text-slate-300 hover:text-white"
+                  className="text-lg font-medium text-slate-300 hover:text-white py-2 block transition-colors"
                   onClick={() => setMobileMenuOpen(false)}
                 >
                   {link.name}

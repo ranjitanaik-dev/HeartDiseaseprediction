@@ -12,7 +12,7 @@ export default function DashboardLayout() {
   const handleLogout = async () => {
     try {
       await logout();
-      navigate('/login');
+      navigate('/');
     } catch (error) {
       console.error('Logout error:', error);
     }
@@ -48,7 +48,7 @@ export default function DashboardLayout() {
 
       {/* Sidebar Navigation */}
       <aside className={`
-        fixed md:sticky top-0 left-0 z-40 h-screen w-64 border-r border-white/10 bg-slate-900/50 backdrop-blur-md flex-col
+        fixed md:sticky top-0 left-0 z-40 h-screen w-64 border-r border-white/10 bg-slate-950/95 md:bg-slate-900/50 backdrop-blur-xl flex-col
         transition-transform duration-300 ease-in-out
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0
         flex

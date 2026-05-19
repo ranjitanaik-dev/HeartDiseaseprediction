@@ -27,7 +27,7 @@ export default function BasicPrediction() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:8000/api/predict/basic', formData);
+      const response = await axios.post('https://heartdiseaseprediction-uhor.onrender.com/api/predict/basic', formData);
       setResult(response.data);
     } catch (error) {
       console.error("Prediction error", error);

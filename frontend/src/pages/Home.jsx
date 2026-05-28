@@ -15,7 +15,7 @@ export default function Home() {
     <div className="bg-slate-950 text-slate-50 font-sans selection:bg-rose-500/30 selection:text-rose-200 overflow-hidden">
       
       {/* 1. HERO SECTION */}
-      <section className="relative pt-32 pb-24 md:pt-40 md:pb-32 flex items-center min-h-screen overflow-hidden">
+      <section className="relative pt-24 pb-16 md:pt-40 md:pb-32 flex items-start lg:items-center min-h-screen overflow-hidden">
         {/* Abstract Glow Background */}
         <div className="absolute inset-0 z-0">
           <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-rose-600/20 rounded-full blur-[120px] mix-blend-screen opacity-60 animate-pulse" />
@@ -57,10 +57,10 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="relative hidden lg:block h-[600px] w-full"
+            className="relative block h-[380px] sm:h-[480px] lg:h-[600px] w-full mt-8 lg:mt-0"
           >
             {/* Main Interactive Glass Element */}
-            <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/40 to-slate-900/40 rounded-[3rem] backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-center overflow-hidden rotate-2">
+            <div className="absolute inset-0 bg-gradient-to-tr from-slate-800/40 to-slate-900/40 rounded-[2rem] sm:rounded-[3rem] backdrop-blur-xl border border-white/10 shadow-2xl flex items-center justify-center overflow-hidden rotate-2">
               <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-5"></div>
               
               <motion.div
@@ -68,23 +68,23 @@ export default function Home() {
                 transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
                 className="relative z-10"
               >
-                <Heart className="w-48 h-48 text-rose-500 fill-rose-500/20 drop-shadow-[0_0_30px_rgba(225,29,72,0.4)]" />
+                <Heart className="w-32 h-32 sm:w-48 sm:h-48 text-rose-500 fill-rose-500/20 drop-shadow-[0_0_30px_rgba(225,29,72,0.4)]" />
                 {/* Heartbeat EKG line inside */}
-                <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-20 h-20 text-white opacity-80" />
+                <Activity className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-14 h-14 sm:w-20 sm:h-20 text-white opacity-80" />
               </motion.div>
 
               {/* Floating Stat 1 */}
               <motion.div 
                 animate={{ y: [-15, 15, -15] }}
                 transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-16 left-8 bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-xl flex items-center gap-4"
+                className="absolute top-8 left-4 sm:top-16 sm:left-8 bg-slate-900/80 backdrop-blur-md p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/10 shadow-xl flex items-center gap-3 sm:gap-4"
               >
-                <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
-                  <Brain className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400">
+                  <Brain className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 font-medium">AI Accuracy</p>
-                  <p className="font-bold text-lg text-white">98.5%</p>
+                  <p className="text-[10px] sm:text-xs text-slate-400 font-medium">AI Accuracy</p>
+                  <p className="font-bold text-sm sm:text-lg text-white">98.5%</p>
                 </div>
               </motion.div>
 
@@ -92,14 +92,14 @@ export default function Home() {
               <motion.div 
                 animate={{ y: [15, -15, 15] }}
                 transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="absolute bottom-24 right-8 bg-slate-900/80 backdrop-blur-md p-4 rounded-2xl border border-white/10 shadow-xl flex items-center gap-4"
+                className="absolute bottom-8 right-4 sm:bottom-24 sm:right-8 bg-slate-900/80 backdrop-blur-md p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/10 shadow-xl flex items-center gap-3 sm:gap-4"
               >
-                <div className="w-12 h-12 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400">
-                  <Activity className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-rose-500/20 flex items-center justify-center text-rose-400">
+                  <Activity className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
                 <div>
-                  <p className="text-xs text-slate-400 font-medium">Risk Status</p>
-                  <p className="font-bold text-lg text-white">Analyzed</p>
+                  <p className="text-[10px] sm:text-xs text-slate-400 font-medium">Risk Status</p>
+                  <p className="font-bold text-sm sm:text-lg text-white">Analyzed</p>
                 </div>
               </motion.div>
             </div>

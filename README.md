@@ -22,7 +22,10 @@ A Machine Learning-based healthcare application that predicts the likelihood of 
 
 ## Screenshots
 
-(Add screenshots here)
+<img width="1920" height="1080" alt="Screenshot (303)" src="https://github.com/user-attachments/assets/9b911a97-ba58-4973-8ea6-92aa2f981e20" />
+<img width="1920" height="1080" alt="Screenshot (304)" src="https://github.com/user-attachments/assets/670424a1-e4c5-494b-b2d2-131dc2bbe658" />
+
+<img width="1920" height="1080" alt="Screenshot (305)" src="https://github.com/user-attachments/assets/50694cf5-2479-42b0-a329-a2e01dd1f1a3" />
 
 ## Installation
 

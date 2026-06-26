@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { 
   HeartPulse, ShieldCheck, Activity, Brain, ArrowRight, CheckCircle2, 
@@ -8,6 +9,7 @@ import {
 } from 'lucide-react';
 
 export default function Home() {
+  const { user } = useAuth();
   const { scrollYProgress } = useScroll();
   const y = useTransform(scrollYProgress, [0, 1], [0, -50]);
 
@@ -42,9 +44,9 @@ export default function Home() {
             <p className="text-base sm:text-lg md:text-xl text-slate-300 mb-8 sm:mb-10 max-w-xl leading-relaxed font-light">
               AI-powered heart risk assessment platform helping people understand their heart health through smart lifestyle and clinical analysis.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <Link to="/register" className="w-full sm:w-auto px-8 py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-full font-bold text-lg transition-all transform hover:-translate-y-1 shadow-[0_0_30px_rgba(225,29,72,0.4)] flex items-center justify-center gap-2 group">
-                Start Health Check
+             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+              <Link to={user ? "/dashboard" : "/login"} className="w-full sm:w-auto px-8 py-4 bg-rose-600 hover:bg-rose-500 text-white rounded-full font-bold text-lg transition-all transform hover:-translate-y-1 shadow-[0_0_30px_rgba(225,29,72,0.4)] flex items-center justify-center gap-2 group">
+                Start Prediction
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
               <a href="#how-it-works" className="w-full sm:w-auto px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full font-bold text-lg transition-all text-center backdrop-blur-md flex items-center justify-center gap-2 text-slate-200">
@@ -237,7 +239,7 @@ export default function Home() {
                   Actionable, personalized health recommendations
                 </li>
               </ul>
-              <Link to="/register" className="inline-flex items-center gap-2 text-rose-400 font-bold hover:text-rose-300 transition-colors">
+              <Link to={user ? "/dashboard" : "/login"} className="inline-flex items-center gap-2 text-rose-400 font-bold hover:text-rose-300 transition-colors">
                 Explore the Dashboard <ChevronRight className="w-5 h-5" />
               </Link>
             </motion.div>

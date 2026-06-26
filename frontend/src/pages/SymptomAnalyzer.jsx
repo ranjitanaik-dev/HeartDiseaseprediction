@@ -12,7 +12,8 @@ export default function SymptomAnalyzer() {
     if (!symptoms.trim()) return;
     setLoading(true);
     try {
-      const response = await axios.post('https://heartdiseaseprediction-uhor.onrender.com/api/analyze/symptoms', { symptoms });
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+      const response = await axios.post(`${apiUrl}/api/analyze/symptoms`, { symptoms });
       setAnalysis(response.data);
     } catch (error) {
       alert("Analysis failed. Ensure backend is running.");

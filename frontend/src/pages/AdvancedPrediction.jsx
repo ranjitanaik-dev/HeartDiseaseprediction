@@ -17,7 +17,8 @@ export default function AdvancedPrediction() {
     e.preventDefault();
     setLoading(true);
     try {
-      const response = await axios.post('https://heartdiseaseprediction-uhor.onrender.com/api/predict/advanced', formData);
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000';
+      const response = await axios.post(`${apiUrl}/api/predict/advanced`, formData);
       setResult(response.data);
     } catch (error) {
       console.error("Advanced prediction error", error);

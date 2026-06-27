@@ -50,20 +50,29 @@ export default function ReportView() {
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in pb-12">
       
       {/* Back Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 no-print">
         <button 
-          onClick={() => navigate(-1)}
-          className="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-2 cursor-pointer"
+          onClick={() => navigate("/dashboard")}
+          className="text-xs text-slate-400 hover:text-white transition-colors flex items-center gap-2 cursor-pointer font-bold"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to List
+          <ArrowLeft className="w-4 h-4" /> Return to Dashboard
         </button>
         
-        <button 
-          onClick={handleDownloadPDF}
-          className="py-2.5 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center gap-2 shadow-md"
-        >
-          <FileDown className="w-4 h-4" /> Download Medical PDF
-        </button>
+        <div className="flex gap-2 w-full sm:w-auto">
+          <button 
+            onClick={handleDownloadPDF}
+            className="flex-1 sm:flex-initial py-2.5 px-4 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md"
+          >
+            <FileDown className="w-4 h-4" /> Download PDF
+          </button>
+          
+          <button 
+            onClick={() => window.print()}
+            className="flex-1 sm:flex-initial py-2.5 px-4 bg-slate-900 border border-white/10 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-md"
+          >
+            Print Report
+          </button>
+        </div>
       </div>
 
       {/* Main Report Page Visual */}

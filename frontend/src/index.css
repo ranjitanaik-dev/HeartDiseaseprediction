@@ -146,3 +146,33 @@ body {
 .light .hover\:bg-slate-800\/80:hover {
   background-color: rgba(15, 23, 42, 0.08) !important;
 }
+
+@media print {
+  aside, header, nav, .no-print, button, .flex-col.sm\:flex-row {
+    display: none !important;
+  }
+  body, html, main, .glass-card {
+    background: white !important;
+    color: black !important;
+    border: none !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  .glass-card {
+    border-color: #e2e8f0 !important;
+  }
+  h2, h3, h4, span, p, td, th {
+    color: #0f172a !important;
+  }
+  .text-white {
+    color: #0f172a !important;
+  }
+  .text-slate-400 {
+    color: #475569 !important;
+  }
+  .bg-white\/5 {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+  }
+}

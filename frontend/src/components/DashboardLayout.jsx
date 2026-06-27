@@ -12,6 +12,7 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   
   // Theme state: read from local storage
@@ -169,25 +170,91 @@ export default function DashboardLayout() {
               {theme === 'light' ? <Moon className="w-5 h-5 text-rose-500" /> : <Sun className="w-5 h-5 text-yellow-500" />}
             </button>
 
-            {/* User Profile Card matching the shared photo */}
-            <div className="flex items-center gap-3 bg-[#0f172a]/40 hover:bg-[#0f172a]/60 border border-white/5 px-4 py-2 rounded-2xl transition-all cursor-pointer">
-              {user?.user_metadata?.avatar_url ? (
-                <img 
-                  src={user.user_metadata.avatar_url} 
-                  alt={user.user_metadata.full_name || 'User'} 
-                  className="w-10 h-10 rounded-full border border-pink-500 shadow-md object-cover select-none"
-                  referrerPolicy="no-referrer"
-                />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-pink-600 border border-pink-500 flex items-center justify-center text-white font-bold text-base shadow-md select-none font-sans">
-                  {(user?.user_metadata?.full_name || 'R').charAt(0).toUpperCase()}
+            {/* User Profile Card with Dropdown Menu */}
+            <div className="relative">
+              <div 
+                onClick={() => setProfileOpen(!profileOpen)}
+                className="flex items-center gap-3 bg-[#0f172a]/40 hover:bg-[#0f172a]/60 border border-white/5 px-4 py-2 rounded-2xl transition-all cursor-pointer select-none"
+              >
+                {user?.user_metadata?.avatar_url ? (
+                  <img 
+                    src={user.user_metadata.avatar_url} 
+                    alt={user.user_metadata.full_name || 'User'} 
+                    className="w-10 h-10 rounded-full border border-pink-500 shadow-md object-cover select-none"
+                    referrerPolicy="no-referrer"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-pink-600 border border-pink-500 flex items-center justify-center text-white font-bold text-base shadow-md select-none font-sans">
+                    {(user?.user_metadata?.full_name || 'R').charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <div className="flex flex-col text-left">
+                  <span className="font-bold text-white text-sm leading-none font-sans">{user?.user_metadata?.full_name || 'Ranjita Naik'}</span>
+                  <span className="text-[9px] text-slate-400 font-semibold leading-none mt-1 font-sans">{user?.email}</span>
                 </div>
-              )}
-              <div className="flex flex-col text-left">
-                <span className="font-bold text-white text-sm leading-none font-sans">{user?.user_metadata?.full_name || 'Ranjita Naik'}</span>
-                <span className="text-[9px] text-slate-400 font-semibold leading-none mt-1 font-sans">{user?.email}</span>
+                <ChevronDown className={`w-4 h-4 text-slate-400 ml-1 transition-transform ${profileOpen ? 'rotate-180' : ''}`} />
               </div>
-              <ChevronDown className="w-4 h-4 text-slate-400 ml-1" />
+
+              {/* Profile Dropdown Menu */}
+              {profileOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setProfileOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-56 bg-slate-905 border border-white/10 rounded-2xl shadow-xl py-2 z-20 text-xs">
+                    <Link 
+                      to="/profile" 
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 transition-colors font-semibold"
+                    >
+                      <User className="w-4 h-4 text-rose-500" /> View Profile
+                    </Link>
+                    <Link 
+                      to="/reports" 
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 transition-colors font-semibold"
+                    >
+                      <FileText className="w-4 h-4 text-rose-500" /> My Reports
+                    </Link>
+                    <Link 
+                      to="/history" 
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 transition-colors font-semibold"
+                    >
+                      <History className="w-4 h-4 text-rose-500" /> Prediction History
+                    </Link>
+                    <Link 
+                      to="/health-goals" 
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 transition-colors font-semibold"
+                    >
+                      <Target className="w-4 h-4 text-rose-500" /> Health Goals
+                    </Link>
+                    <Link 
+                      to="/settings" 
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 transition-colors font-semibold"
+                    >
+                      <SettingsIcon className="w-4 h-4 text-rose-500" /> Settings
+                    </Link>
+                    <Link 
+                      to="/faq" 
+                      onClick={() => setProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2.5 text-slate-300 hover:text-white hover:bg-white/5 transition-colors font-semibold"
+                    >
+                      <HelpCircle className="w-4 h-4 text-rose-500" /> Help & Support
+                    </Link>
+                    <div className="border-t border-white/5 my-1" />
+                    <button 
+                      onClick={() => {
+                        setProfileOpen(false);
+                        logout();
+                      }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors font-bold text-left cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4" /> Logout
+                    </button>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </header>

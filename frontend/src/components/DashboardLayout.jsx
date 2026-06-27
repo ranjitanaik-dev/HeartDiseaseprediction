@@ -11,13 +11,21 @@ export default function DashboardLayout() {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  
+  // Navigation Menus states
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [mobileProfileOpen, setMobileProfileOpen] = useState(false);
   
-  // Theme state: read from local storage
+  // Real-time Notifications states
+  const [notifications, setNotifications] = useState([]);
+  const [notifsOpen, setNotifsOpen] = useState(false);
+  const [mobileNotifsOpen, setMobileNotifsOpen] = useState(false);
+
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [theme, setTheme] = useState(localStorage.getItem('cardio_theme') || 'dark');
 
+  // Sync date ticker
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -25,6 +33,7 @@ export default function DashboardLayout() {
     return () => clearInterval(timer);
   }, []);
 
+  // Sync theme
   useEffect(() => {
     if (theme === 'light') {
       document.documentElement.classList.add('light');
@@ -34,17 +43,41 @@ export default function DashboardLayout() {
     localStorage.setItem('cardio_theme', theme);
   }, [theme]);
 
+  // Load and sync notifications
+  const loadNotifications = () => {
+    if (user?.uid) {
+      const saved = JSON.parse(localStorage.getItem(`cardio_notifs_${user.uid}`) || '[]');
+      setNotifications(saved);
+    }
+  };
+
+  useEffect(() => {
+    loadNotifications();
+    window.addEventListener('notifications_updated', loadNotifications);
+    const interval = setInterval(loadNotifications, 5000);
+    return () => {
+      window.removeEventListener('notifications_updated', loadNotifications);
+      clearInterval(interval);
+    };
+  }, [user]);
+
+  const handleClearNotif = (id) => {
+    const updated = notifications.filter(n => n.id !== id);
+    setNotifications(updated);
+    if (user?.uid) localStorage.setItem(`cardio_notifs_${user.uid}`, JSON.stringify(updated));
+  };
+
+  const handleClearAllNotifs = () => {
+    setNotifications([]);
+    if (user?.uid) localStorage.removeItem(`cardio_notifs_${user.uid}`);
+  };
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      navigate('/');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+  const handleLogout = () => {
+    logout();
   };
 
   const navLinks = [
@@ -60,30 +93,111 @@ export default function DashboardLayout() {
     { name: 'Settings', path: '/settings', icon: <SettingsIcon className="w-5 h-5" /> },
   ];
 
+  const formatHeaderTime = (date) => {
+    return date.toLocaleString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: true
+    });
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col md:flex-row">
+    <div className="min-h-screen flex flex-col md:flex-row bg-[#020617] text-slate-100 font-sans">
       
-      {/* Mobile Header */}
-      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="flex items-center gap-2 text-health-500 font-bold text-xl">
+      {/* 1. Mobile & Tablet Header Bar */}
+      <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-slate-905/80 backdrop-blur-md sticky top-0 z-50 select-none">
+        <div className="flex items-center gap-2 text-health-500 font-bold text-lg">
           <HeartPulse className="w-6 h-6 fill-current animate-pulse text-rose-500" />
           <span className="text-white">CardioSense</span>
         </div>
-        <div className="flex items-center gap-2">
+        
+        <div className="flex items-center gap-2.5">
+          {/* Mobile Theme Toggle */}
           <button 
             onClick={toggleTheme}
-            className="p-2 rounded-full bg-white/5 border border-white/10 text-slate-300"
-            aria-label="Toggle Theme"
+            className="p-2 rounded-xl bg-white/5 border border-white/10 text-slate-350"
           >
             {theme === 'light' ? <Moon className="w-4 h-4 text-rose-500" /> : <Sun className="w-4 h-4 text-yellow-500" />}
           </button>
+
+          {/* Mobile Notifications Bell */}
+          <div className="relative">
+            <button 
+              onClick={() => setMobileNotifsOpen(!mobileNotifsOpen)}
+              className="p-2 text-slate-400 hover:text-white transition-colors relative cursor-pointer"
+            >
+              <Bell className="w-5 h-5" />
+              {notifications.length > 0 && (
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-ping" />
+              )}
+            </button>
+            {mobileNotifsOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setMobileNotifsOpen(false)} />
+                <div className="absolute right-0 mt-2 w-64 bg-slate-900 border border-white/10 rounded-2xl shadow-xl py-2 z-20 text-xs max-h-[280px] overflow-y-auto">
+                  <div className="px-4 py-1.5 border-b border-white/5 font-bold text-white flex justify-between items-center">
+                    <span>Alerts</span>
+                    {notifications.length > 0 && (
+                      <button onClick={handleClearAllNotifs} className="text-[9px] text-rose-400 font-bold">Clear All</button>
+                    )}
+                  </div>
+                  {notifications.length === 0 ? (
+                    <p className="p-4 text-slate-500 text-center font-light">No new alerts</p>
+                  ) : (
+                    <div className="divide-y divide-white/5">
+                      {notifications.map((n) => (
+                        <div key={n.id} className="p-3 flex justify-between items-center gap-2">
+                          <div>
+                            <p className="text-slate-200 leading-tight">{n.text}</p>
+                            <span className="text-[8px] text-slate-550 mt-0.5 block">{n.date}</span>
+                          </div>
+                          <button onClick={() => handleClearNotif(n.id)} className="text-slate-500"><X className="w-3 h-3" /></button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Mobile User Profile Avatar */}
+          <div className="relative">
+            <button onClick={() => setMobileProfileOpen(!mobileProfileOpen)} className="w-8 h-8 rounded-full overflow-hidden border border-pink-500 shadow-sm cursor-pointer">
+              {user?.user_metadata?.avatar_url ? (
+                <img src={user.user_metadata.avatar_url} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+              ) : (
+                <div className="w-full h-full bg-pink-600 flex items-center justify-center text-white font-bold text-xs select-none">
+                  {(user?.user_metadata?.full_name || 'R').charAt(0).toUpperCase()}
+                </div>
+              )}
+            </button>
+            {mobileProfileOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setMobileProfileOpen(false)} />
+                <div className="absolute right-0 mt-2 w-48 bg-slate-900 border border-white/10 rounded-2xl shadow-xl py-2 z-20 text-xs">
+                  <Link to="/profile" onClick={() => setMobileProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-slate-300"><User className="w-4 h-4 text-rose-500" /> My Profile</Link>
+                  <Link to="/settings" onClick={() => setMobileProfileOpen(false)} className="flex items-center gap-2 px-4 py-2 text-slate-300"><SettingsIcon className="w-4 h-4 text-rose-500" /> Settings</Link>
+                  <div className="border-t border-white/5 my-1" />
+                  <button onClick={handleLogout} className="w-full text-left px-4 py-2 text-red-400 font-bold"><LogOut className="w-4 h-4 inline mr-2" /> Logout</button>
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Hamburger Menu Toggle */}
           <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 text-slate-400 hover:text-white">
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
 
-      {/* Sidebar Navigation */}
+      {/* 2. Sidebar Drawer (Responsive Collapsible) */}
       <aside className={`
         fixed md:sticky top-0 left-0 z-40 h-screen w-64 border-r border-white/10 bg-slate-950/95 md:bg-slate-900/50 backdrop-blur-xl flex-col
         transition-transform duration-300 ease-in-out
@@ -95,7 +209,7 @@ export default function DashboardLayout() {
           CardioSense AI
         </div>
 
-        <div className="p-6 border-b border-white/10">
+        <div className="p-6 border-b border-white/10 select-none">
           <p className="text-xs text-slate-400 leading-none">Welcome back,</p>
           <p className="font-bold text-md truncate text-white mt-1.5">{user?.user_metadata?.full_name || 'Guest User'}</p>
         </div>
@@ -109,10 +223,10 @@ export default function DashboardLayout() {
                 to={link.path}
                 onClick={() => setMobileMenuOpen(false)}
                 className={`
-                  flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors
+                  flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-semibold transition-colors
                   ${isActive 
-                    ? 'bg-health-500/10 text-health-500 font-semibold border-l-2 border-rose-500' 
-                    : 'text-slate-400 hover:text-slate-55 hover:bg-white/5'}
+                    ? 'bg-health-500/10 text-health-500 font-bold border-l-2 border-rose-500' 
+                    : 'text-slate-400 hover:text-white hover:bg-white/5'}
                 `}
               >
                 {link.icon}
@@ -125,7 +239,7 @@ export default function DashboardLayout() {
         <div className="p-4 border-t border-white/10 space-y-2">
           <button 
             onClick={handleLogout}
-            className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium text-red-400 hover:text-red-300 hover:bg-red-400/10 w-full text-left transition-colors cursor-pointer"
+            className="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-bold text-red-400 hover:text-red-300 hover:bg-red-400/10 w-full text-left transition-colors cursor-pointer"
           >
             <LogOut className="w-5 h-5" />
             Logout
@@ -133,11 +247,11 @@ export default function DashboardLayout() {
         </div>
       </aside>
 
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-h-screen">
+      {/* 3. Main Content Wrapper */}
+      <div className="flex-1 flex flex-col min-h-screen min-w-0">
+        
         {/* Desktop Header */}
-        <header className="hidden md:flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/20 backdrop-blur-md sticky top-0 z-30">
-          
+        <header className="hidden md:flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/20 backdrop-blur-md sticky top-0 z-30 select-none">
           {/* Quick Search */}
           <div className="relative w-72">
             <input 
@@ -145,9 +259,7 @@ export default function DashboardLayout() {
               placeholder="Search reports, metrics..." 
               className="w-full bg-[#0f172a]/40 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-rose-500 transition-all font-sans"
               onChange={(e) => {
-                // Set keyword in local storage for reports filtering
                 localStorage.setItem('quick_search_query', e.target.value);
-                // Dispatch custom event to notify Reports component
                 window.dispatchEvent(new Event('quick_search_updated'));
               }}
             />
@@ -155,13 +267,49 @@ export default function DashboardLayout() {
           </div>
           
           <div className="flex items-center gap-6">
-            {/* Notifications */}
-            <button className="p-2 text-slate-400 hover:text-white transition-colors relative cursor-pointer">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
-            </button>
+            
+            {/* Desktop Notifications Bell */}
+            <div className="relative">
+              <button 
+                onClick={() => setNotifsOpen(!notifsOpen)}
+                className="p-2 text-slate-400 hover:text-white transition-colors relative cursor-pointer"
+              >
+                <Bell className="w-5 h-5" />
+                {notifications.length > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
+                )}
+              </button>
+              {notifsOpen && (
+                <>
+                  <div className="fixed inset-0 z-10" onClick={() => setNotifsOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-64 bg-slate-900 border border-white/10 rounded-2xl shadow-xl py-2 z-20 text-xs text-left max-h-[300px] overflow-y-auto">
+                    <div className="px-4 py-1.5 border-b border-white/5 font-bold text-white flex justify-between items-center">
+                      <span>Notifications</span>
+                      {notifications.length > 0 && (
+                        <button onClick={handleClearAllNotifs} className="text-[9px] text-rose-400 font-bold">Clear All</button>
+                      )}
+                    </div>
+                    {notifications.length === 0 ? (
+                      <p className="p-4 text-slate-500 text-center font-light">No new alerts</p>
+                    ) : (
+                      <div className="divide-y divide-white/5">
+                        {notifications.map((n) => (
+                          <div key={n.id} className="p-3 flex justify-between items-center gap-2">
+                            <div>
+                              <p className="text-slate-200 leading-normal font-medium">{n.text}</p>
+                              <span className="text-[9px] text-slate-500 mt-0.5 block">{n.date}</span>
+                            </div>
+                            <button onClick={() => handleClearNotif(n.id)} className="text-slate-500"><X className="w-3 h-3" /></button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
 
-            {/* Dark Mode Toggle */}
+            {/* Desktop Theme Toggle */}
             <button 
               onClick={toggleTheme}
               className="p-2 text-slate-400 hover:text-white transition-colors cursor-pointer"
@@ -170,7 +318,7 @@ export default function DashboardLayout() {
               {theme === 'light' ? <Moon className="w-5 h-5 text-rose-500" /> : <Sun className="w-5 h-5 text-yellow-500" />}
             </button>
 
-            {/* User Profile Card with Dropdown Menu */}
+            {/* Desktop User Profile Card Dropdown Menu */}
             <div className="relative">
               <div 
                 onClick={() => setProfileOpen(!profileOpen)}
@@ -256,40 +404,32 @@ export default function DashboardLayout() {
                 </>
               )}
             </div>
+
           </div>
         </header>
 
-        {/* Content & Footer Wrapper */}
-        <main className="flex-1 w-full relative flex flex-col justify-between">
+        {/* Content Section */}
+        <main className="flex-1 w-full relative flex flex-col justify-between overflow-x-hidden">
           <div className="container mx-auto p-4 md:p-8 flex-grow space-y-6">
-            {/* Date Card matching the shared photo */}
-            <div className="flex justify-end mb-2">
-              <div className="flex items-center gap-2 bg-[#0f172a]/40 border border-white/5 px-4 py-2.5 rounded-2xl text-slate-300 text-sm font-semibold select-none font-sans shadow-sm">
-                <Calendar className="w-4.5 h-4.5 text-slate-400" />
-                <span>
-                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
-                  {" • "}
-                  {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                </span>
+            
+            {/* Ticking Time Banner */}
+            <div className="flex justify-end mb-2 select-none no-print">
+              <div className="flex items-center gap-2 px-4 py-2 bg-slate-900/50 border border-white/10 rounded-2xl text-xs font-bold text-slate-300">
+                <Calendar className="w-4 h-4 text-rose-500" />
+                <span className="font-mono">{formatHeaderTime(currentTime)}</span>
               </div>
             </div>
+
             <Outlet />
           </div>
 
-          {/* Simple layout footer - no email, no heroes buttons */}
-          <footer className="border-t border-white/10 p-6 bg-slate-900/30 text-center text-xs text-slate-400 mt-8">
-            <p>&copy; {new Date().getFullYear()} CardioSense AI. All rights reserved. Confidential Patient Portal.</p>
+          {/* Simple Privacy Footer */}
+          <footer className="w-full py-4 border-t border-white/10 text-center text-[10px] text-slate-500 no-print select-none">
+            Patient Bio-Data Encrypted Client Sandbox • CardioSense AI © {new Date().getFullYear()}
           </footer>
         </main>
       </div>
 
-      {/* Mobile overlay */}
-      {mobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
     </div>
   );
 }

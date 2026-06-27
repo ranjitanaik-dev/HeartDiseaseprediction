@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { FileText, FileDown, FileCheck, Search, Filter, ShieldCheck, Download } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -230,12 +231,21 @@ export default function Reports() {
                   </div>
                 </div>
 
-                <button 
-                  onClick={() => handleDownloadPDF(record)}
-                  className="w-full mt-1.5 py-2.5 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-lg text-xs font-bold text-white flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-colors"
-                >
-                  <FileDown className="w-3.5 h-3.5 text-rose-500" /> Export PDF Report
-                </button>
+                <div className="flex gap-2 mt-2">
+                  <Link 
+                    to={`/reports/view/${record.id}`}
+                    className="flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold text-center transition-colors cursor-pointer"
+                  >
+                    View Report
+                  </Link>
+                  <button 
+                    onClick={() => handleDownloadPDF(record)}
+                    className="px-3 py-2 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition-colors cursor-pointer"
+                    title="Export PDF"
+                  >
+                    <FileDown className="w-4 h-4 text-rose-500" />
+                  </button>
+                </div>
               </div>
             ))}
           </motion.div>

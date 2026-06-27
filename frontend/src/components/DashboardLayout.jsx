@@ -171,12 +171,21 @@ export default function DashboardLayout() {
 
             {/* User Profile Card matching the shared photo */}
             <div className="flex items-center gap-3 bg-[#0f172a]/40 hover:bg-[#0f172a]/60 border border-white/5 px-4 py-2 rounded-2xl transition-all cursor-pointer">
-              <div className="w-10 h-10 rounded-full bg-pink-600 border border-pink-500 flex items-center justify-center text-white font-bold text-base shadow-md select-none font-sans">
-                {(user?.user_metadata?.full_name || 'R').charAt(0).toUpperCase()}
-              </div>
+              {user?.user_metadata?.avatar_url ? (
+                <img 
+                  src={user.user_metadata.avatar_url} 
+                  alt={user.user_metadata.full_name || 'User'} 
+                  className="w-10 h-10 rounded-full border border-pink-500 shadow-md object-cover select-none"
+                  referrerPolicy="no-referrer"
+                />
+              ) : (
+                <div className="w-10 h-10 rounded-full bg-pink-600 border border-pink-500 flex items-center justify-center text-white font-bold text-base shadow-md select-none font-sans">
+                  {(user?.user_metadata?.full_name || 'R').charAt(0).toUpperCase()}
+                </div>
+              )}
               <div className="flex flex-col text-left">
-                <span className="font-bold text-white text-sm leading-tight font-sans">{user?.user_metadata?.full_name || 'Ranjita Naik'}</span>
-                <span className="text-xs text-slate-400 leading-none mt-1 font-sans">{user?.user_metadata?.role || 'Student'}</span>
+                <span className="font-bold text-white text-sm leading-none font-sans">{user?.user_metadata?.full_name || 'Ranjita Naik'}</span>
+                <span className="text-[9px] text-slate-400 font-semibold leading-none mt-1 font-sans">{user?.email}</span>
               </div>
               <ChevronDown className="w-4 h-4 text-slate-400 ml-1" />
             </div>

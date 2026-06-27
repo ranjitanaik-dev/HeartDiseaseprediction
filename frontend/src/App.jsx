@@ -24,6 +24,7 @@ import Settings from './pages/Settings';
 import HealthAnalytics from './pages/HealthAnalytics';
 import HealthInsights from './pages/HealthInsights';
 import HealthGoals from './pages/HealthGoals';
+import ReportView from './pages/ReportView';
 
 // A wrapper to conditionally hide the Navbar on Auth pages or Dashboard (which has its own layout)
 function PublicLayout({ children }) {
@@ -60,6 +61,7 @@ function App() {
               <Route path="/analyze" element={<SymptomAnalyzer />} />
               <Route path="/history" element={<History />} />
               <Route path="/reports" element={<Reports />} />
+              <Route path="/reports/view/:id" element={<ReportView />} />
               <Route path="/health-analytics" element={<HealthAnalytics />} />
               <Route path="/health-insights" element={<HealthInsights />} />
               <Route path="/health-goals" element={<HealthGoals />} />

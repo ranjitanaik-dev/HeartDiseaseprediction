@@ -232,52 +232,57 @@ export default function History() {
               <table className="w-full text-left">
                 <thead>
                   <tr className="border-b border-white/10 text-slate-500 text-sm">
+                    <th className="pb-4 font-bold">Report ID</th>
                     <th className="pb-4 font-bold">Date & Time</th>
-                    <th className="pb-4 font-bold">Method</th>
+                    <th className="pb-4 font-bold">Patient Name</th>
                     <th className="pb-4 font-bold">Risk Level</th>
                     <th className="pb-4 font-bold">Health Score</th>
                     <th className="pb-4 font-bold">BMI</th>
-                    <th className="pb-4 font-bold">Heart Age Offset</th>
                     <th className="pb-4 font-bold text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
-                  {history.map((record) => (
-                    <tr key={record.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
-                      <td className="py-4 text-slate-300 font-medium">{record.date}</td>
-                      <td className="py-4 font-semibold text-white">{record.mode}</td>
-                      <td className="py-4">
-                        <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${record.riskLevel === 'High' ? 'bg-red-500/20 text-red-500 border border-red-500/10' : record.riskLevel === 'Medium' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/10' : 'bg-green-500/20 text-green-500 border border-green-500/10'}`}>
-                          {record.riskLevel} ({record.riskPercentage}%)
-                        </span>
-                      </td>
-                      <td className="py-4 font-bold text-health-500">{record.healthScore}/100</td>
-                      <td className="py-4 font-semibold text-white">{record.bmi} ({record.bmiCategory})</td>
-                      <td className="py-4">
-                        <span className={`font-semibold ${record.heartAgeDiff > 0 ? 'text-red-400' : record.heartAgeDiff === 0 ? 'text-slate-300' : 'text-green-400'}`}>
-                          {record.heartAgeDiff > 0 ? `+${record.heartAgeDiff}` : record.heartAgeDiff} yrs
-                        </span>
-                      </td>
-                      <td className="py-4 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button 
-                            onClick={() => handleDownloadPDF(record)}
-                            className="p-2 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-white transition-colors cursor-pointer"
-                            title="Download PDF"
-                          >
-                            <FileDown className="w-4 h-4" />
-                          </button>
-                          <button 
-                            onClick={() => handleDeleteItem(record.id)}
-                            className="p-2 bg-red-500/10 border border-red-500/10 hover:bg-red-500 hover:border-red-500 rounded-lg text-red-400 hover:text-white transition-colors cursor-pointer"
-                            title="Delete Record"
-                          >
-                            <Trash2 className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {history.map((record) => {
+                    const patientName = user?.displayName || user?.email?.split('@')[0] || "Guest Patient";
+                    return (
+                      <tr key={record.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
+                        <td className="py-4 text-slate-400 font-mono text-[11px]">#{record.id.slice(-6).toUpperCase()}</td>
+                        <td className="py-4 text-slate-300 font-medium">{record.date}</td>
+                        <td className="py-4 text-white font-semibold">{patientName}</td>
+                        <td className="py-4">
+                          <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${record.riskLevel === 'High' ? 'bg-red-500/20 text-red-500 border border-red-500/10' : record.riskLevel === 'Medium' ? 'bg-yellow-500/20 text-yellow-500 border border-yellow-500/10' : 'bg-green-500/20 text-green-500 border border-green-500/10'}`}>
+                            {record.riskLevel} ({record.riskPercentage}%)
+                          </span>
+                        </td>
+                        <td className="py-4 font-bold text-health-500">{record.healthScore}/100</td>
+                        <td className="py-4 font-semibold text-white">{record.bmi} ({record.bmiCategory})</td>
+                        <td className="py-4 text-right">
+                          <div className="flex justify-end items-center gap-2">
+                            <Link 
+                              to={`/reports/view/${record.id}`}
+                              className="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition-all cursor-pointer shadow-sm"
+                            >
+                              View Report
+                            </Link>
+                            <button 
+                              onClick={() => handleDownloadPDF(record)}
+                              className="p-2 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-lg text-slate-300 hover:text-white transition-colors cursor-pointer"
+                              title="Download PDF"
+                            >
+                              <FileDown className="w-4 h-4" />
+                            </button>
+                            <button 
+                              onClick={() => handleDeleteItem(record.id)}
+                              className="p-2 bg-red-500/10 border border-red-500/10 hover:bg-red-500 hover:border-red-500 rounded-lg text-red-400 hover:text-white transition-colors cursor-pointer"
+                              title="Delete Record"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

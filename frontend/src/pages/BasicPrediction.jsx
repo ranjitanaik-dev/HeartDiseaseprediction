@@ -86,7 +86,11 @@ export default function BasicPrediction() {
 
       const explanation = generateAIExplanation(formData, "Basic", apiResult.risk_percentage, riskLevel);
 
-      const finalResult = {
+      const reportId = `REP-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      const newRecord = {
+        id: reportId,
+        date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
+        mode: "Basic Checkup",
         riskLevel,
         riskPercentage: apiResult.risk_percentage,
         confidenceScore,
@@ -101,18 +105,12 @@ export default function BasicPrediction() {
         disclaimer: "This prediction is generated using a machine learning model and is intended only for educational purposes. It is not a substitute for professional medical advice."
       };
 
-      setResult(finalResult);
+      setResult(newRecord);
 
       // Persist to local history specific to logged-in user
       if (user?.uid) {
         const historyKey = `cardio_history_${user.uid}`;
         const existingHistory = JSON.parse(localStorage.getItem(historyKey) || '[]');
-        const newRecord = {
-          id: Date.now().toString(),
-          date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-          mode: "Basic Check",
-          ...finalResult
-        };
         localStorage.setItem(historyKey, JSON.stringify([newRecord, ...existingHistory]));
       }
 

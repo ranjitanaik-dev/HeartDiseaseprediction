@@ -235,6 +235,6 @@ export const generatePDFReport = (patientName, data) => {
   
   // Save PDF file
   const cleanedName = patientName.trim().replace(/\s+/g, '_') || 'Patient';
-  const filename = `CardioSense_HealthReport_${cleanedName}_${new Date().toISOString().split('T')[0]}.pdf`;
+  const filename = `CardioSense_Report_${reportId}_${cleanedName}.pdf`;
   doc.save(filename);
 };

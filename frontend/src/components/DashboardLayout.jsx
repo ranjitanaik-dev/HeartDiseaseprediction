@@ -3,7 +3,8 @@ import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   LayoutDashboard, HeartPulse, History, FileText, Sparkles, 
-  HelpCircle, Settings as SettingsIcon, LogOut, Bell, Sun, Moon, Menu, X 
+  HelpCircle, Settings as SettingsIcon, LogOut, Bell, Sun, Moon, Menu, X,
+  ChevronDown, Calendar
 } from 'lucide-react';
 
 export default function DashboardLayout() {
@@ -128,40 +129,45 @@ export default function DashboardLayout() {
             Welcome back, <span className="text-white font-bold">{user?.user_metadata?.full_name || 'User'}</span>
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
+            {/* Notifications */}
+            <button className="p-2 text-slate-400 hover:text-white transition-colors relative cursor-pointer">
+              <Bell className="w-5 h-5" />
+            </button>
+
             {/* Dark Mode Toggle */}
             <button 
               onClick={toggleTheme}
-              className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+              className="p-2 text-slate-400 hover:text-white transition-colors cursor-pointer"
               title="Toggle Theme"
             >
-              {theme === 'light' ? <Moon className="w-4.5 h-4.5 text-rose-500" /> : <Sun className="w-4.5 h-4.5 text-yellow-500" />}
+              {theme === 'light' ? <Moon className="w-5 h-5 text-rose-500" /> : <Sun className="w-5 h-5 text-yellow-500" />}
             </button>
 
-            {/* Notifications */}
-            <div className="relative">
-              <button className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors relative cursor-pointer">
-                <Bell className="w-4.5 h-4.5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
-              </button>
-            </div>
-
-            {/* User Profile */}
-            <div className="flex items-center gap-3 pl-2 border-l border-white/10">
-              <div className="w-9 h-9 rounded-full bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-500 font-bold text-sm shadow-sm select-none">
-                {(user?.user_metadata?.full_name || user?.email || 'U').charAt(0).toUpperCase()}
+            {/* User Profile Card matching the shared photo */}
+            <div className="flex items-center gap-3 bg-[#0f172a]/40 hover:bg-[#0f172a]/60 border border-white/5 px-4 py-2 rounded-2xl transition-all cursor-pointer">
+              <div className="w-10 h-10 rounded-full bg-pink-600 border border-pink-500 flex items-center justify-center text-white font-bold text-base shadow-md select-none font-sans">
+                {(user?.user_metadata?.full_name || 'R').charAt(0).toUpperCase()}
               </div>
               <div className="flex flex-col text-left">
-                <span className="font-bold text-white text-xs leading-none">{user?.user_metadata?.full_name || 'User'}</span>
-                <span className="text-[9px] text-slate-400 font-semibold mt-1 leading-none">{user?.email}</span>
+                <span className="font-bold text-white text-sm leading-tight font-sans">{user?.user_metadata?.full_name || 'Ranjita Naik'}</span>
+                <span className="text-xs text-slate-400 leading-none mt-1 font-sans">{user?.user_metadata?.role || 'Student'}</span>
               </div>
+              <ChevronDown className="w-4 h-4 text-slate-400 ml-1" />
             </div>
           </div>
         </header>
 
         {/* Content & Footer Wrapper */}
         <main className="flex-1 w-full relative flex flex-col justify-between">
-          <div className="container mx-auto p-4 md:p-8 flex-grow">
+          <div className="container mx-auto p-4 md:p-8 flex-grow space-y-6">
+            {/* Date Card matching the shared photo */}
+            <div className="flex justify-end mb-2">
+              <div className="flex items-center gap-2 bg-[#0f172a]/40 border border-white/5 px-4 py-2.5 rounded-2xl text-slate-300 text-sm font-semibold select-none font-sans shadow-sm">
+                <Calendar className="w-4.5 h-4.5 text-slate-400" />
+                <span>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+              </div>
+            </div>
             <Outlet />
           </div>
 

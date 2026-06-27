@@ -1,17 +1,5 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  auth as firebaseAuth, 
-  googleProvider, 
-  isMockMode 
-} from '../lib/firebaseClient';
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
-  signOut, 
-  signInWithPopup, 
-  onAuthStateChanged,
-  updateProfile 
-} from 'firebase/auth';
+import { supabase } from '../lib/supabaseClient';
 
 const AuthContext = createContext({});
 
@@ -19,28 +7,36 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper to normalize user object structure for backwards compatibility
-  const formatUser = (rawUser) => {
-    if (!rawUser) return null;
+  // Check if env is placeholder mock mode
+  const isMockMode = 
+    !import.meta.env.VITE_SUPABASE_URL || 
+    import.meta.env.VITE_SUPABASE_URL.includes('placeholder') ||
+    !import.meta.env.VITE_SUPABASE_ANON_KEY ||
+    import.meta.env.VITE_SUPABASE_ANON_KEY.includes('placeholder');
+
+  // Normalize user metadata format for frontend compatibility
+  const formatUser = (supabaseUser) => {
+    if (!supabaseUser) return null;
     return {
-      uid: rawUser.uid,
-      email: rawUser.email,
-      displayName: rawUser.displayName,
+      uid: supabaseUser.id,
+      email: supabaseUser.email,
+      displayName: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
       user_metadata: {
-        full_name: rawUser.displayName || rawUser.email?.split('@')[0] || 'User'
+        full_name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'User',
+        role: supabaseUser.user_metadata?.role || 'Student'
       }
     };
   };
 
   useEffect(() => {
     if (isMockMode) {
-      // Mock Auth State Observer
-      const storedMockUser = localStorage.getItem('cardio_mock_user');
-      if (storedMockUser) {
+      const stored = localStorage.getItem('cardio_mock_user');
+      if (stored) {
         try {
-          setUser(formatUser(JSON.parse(storedMockUser)));
+          setUser(JSON.parse(stored));
         } catch (e) {
           localStorage.removeItem('cardio_mock_user');
         }
@@ -49,54 +45,70 @@ export const AuthProvider = ({ children }) => {
       return;
     }
 
-    // Real Firebase Auth State Observer
-    const unsubscribe = onAuthStateChanged(firebaseAuth, (firebaseUser) => {
-      setUser(formatUser(firebaseUser));
+    // Get current session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setSession(session);
+      setUser(formatUser(session?.user));
       setLoading(false);
     });
 
-    return () => unsubscribe();
+    // Listen for changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      setUser(formatUser(session?.user));
+      setLoading(false);
+    });
+
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, []);
 
   const login = async (email, password) => {
     if (isMockMode) {
-      // Simulate Mock Login
-      await new Promise(resolve => setTimeout(resolve, 600));
+      await new Promise(r => setTimeout(r, 600));
       const mockUser = {
         uid: 'mock-user-id-' + email.replace(/[^a-zA-Z0-9]/g, ''),
         email: email,
         displayName: email.split('@')[0],
+        user_metadata: { full_name: email.split('@')[0], role: 'Student' }
       };
       localStorage.setItem('cardio_mock_user', JSON.stringify(mockUser));
-      setUser(formatUser(mockUser));
+      setUser(mockUser);
       return mockUser;
     }
 
-    // Real Firebase Login
-    const credential = await signInWithEmailAndPassword(firebaseAuth, email, password);
-    return credential.user;
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    return formatUser(data.user);
   };
 
   const register = async (email, password, fullName) => {
     if (isMockMode) {
-      // Simulate Mock Registration
-      await new Promise(resolve => setTimeout(resolve, 800));
+      await new Promise(r => setTimeout(r, 800));
       const mockUser = {
         uid: 'mock-user-id-' + email.replace(/[^a-zA-Z0-9]/g, ''),
         email: email,
         displayName: fullName,
+        user_metadata: { full_name: fullName, role: 'Student' }
       };
       localStorage.setItem('cardio_mock_user', JSON.stringify(mockUser));
-      setUser(formatUser(mockUser));
+      setUser(mockUser);
       return mockUser;
     }
 
-    // Real Firebase Registration
-    const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-    await updateProfile(credential.user, { displayName: fullName });
-    // Force user update after setting profile name
-    setUser(formatUser({ ...credential.user, displayName: fullName }));
-    return credential.user;
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          full_name: fullName,
+          role: 'Student' // Default role
+        }
+      }
+    });
+    if (error) throw error;
+    return formatUser(data.user);
   };
 
   const logout = async () => {
@@ -105,40 +117,39 @@ export const AuthProvider = ({ children }) => {
       setUser(null);
       return;
     }
-
-    // Real Firebase Logout
-    await signOut(firebaseAuth);
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
   };
 
   const loginWithGoogle = async () => {
     if (isMockMode) {
-      // Simulate Mock Google OAuth popup
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      const mockGoogleUser = {
-        uid: 'mock-google-user-id',
-        email: 'google.user@example.com',
-        displayName: 'Google Account User',
+      await new Promise(r => setTimeout(r, 1000));
+      const mockUser = {
+        uid: 'mock-google-id',
+        email: 'ranjitanaik062@gmail.com',
+        displayName: 'Ranjita Naik',
+        user_metadata: { full_name: 'Ranjita Naik', role: 'Student' }
       };
-      localStorage.setItem('cardio_mock_user', JSON.stringify(mockGoogleUser));
-      setUser(formatUser(mockGoogleUser));
-      return mockGoogleUser;
+      localStorage.setItem('cardio_mock_user', JSON.stringify(mockUser));
+      setUser(mockUser);
+      return mockUser;
     }
 
-    // Real Firebase Google Login
-    const credential = await signInWithPopup(firebaseAuth, googleProvider);
-    return credential.user;
-  };
-
-  const value = {
-    user,
-    login,
-    register,
-    loginWithGoogle,
-    logout,
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/dashboard`,
+        queryParams: {
+          prompt: 'select_account' // Forces Google Account Picker selection dialog
+        }
+      }
+    });
+    if (error) throw error;
+    return data;
   };
 
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ user, session, login, register, logout, loginWithGoogle, loading }}>
       {!loading && children}
     </AuthContext.Provider>
   );

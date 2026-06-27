@@ -14,7 +14,7 @@ export default function ReportView() {
     if (user?.uid && id) {
       const historyKey = `cardio_history_${user.uid}`;
       const savedHistory = JSON.parse(localStorage.getItem(historyKey) || '[]');
-      const found = savedHistory.find(r => r.id === id);
+      const found = savedHistory.find(r => String(r.id) === String(id));
       if (found) {
         setRecord(found);
       }

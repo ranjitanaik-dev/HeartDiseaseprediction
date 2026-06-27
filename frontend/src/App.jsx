@@ -12,9 +12,15 @@ import Register from './pages/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import DashboardLayout from './components/DashboardLayout';
 import Dashboard from './pages/Dashboard';
+import PredictSelector from './pages/PredictSelector';
 import BasicPrediction from './pages/BasicPrediction';
 import AdvancedPrediction from './pages/AdvancedPrediction';
 import SymptomAnalyzer from './pages/SymptomAnalyzer';
+import History from './pages/History';
+import Reports from './pages/Reports';
+import HealthTips from './pages/HealthTips';
+import FAQPage from './pages/FAQPage';
+import Settings from './pages/Settings';
 
 // A wrapper to conditionally hide the Navbar on Auth pages or Dashboard (which has its own layout)
 function PublicLayout({ children }) {
@@ -45,9 +51,15 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<DashboardLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/predict" element={<PredictSelector />} />
               <Route path="/predict/basic" element={<BasicPrediction />} />
               <Route path="/predict/advanced" element={<AdvancedPrediction />} />
               <Route path="/analyze" element={<SymptomAnalyzer />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/health-tips" element={<HealthTips />} />
+              <Route path="/faq" element={<FAQPage />} />
+              <Route path="/settings" element={<Settings />} />
             </Route>
           </Route>
         </Routes>

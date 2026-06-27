@@ -426,13 +426,34 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
             <p className="text-slate-500 text-sm text-center md:text-left max-w-2xl">
               <span className="font-bold text-slate-400">Medical Disclaimer:</span> This platform provides preventive insights using artificial intelligence and is strictly <span className="text-rose-500 font-medium">not a substitute for professional medical diagnosis</span>, advice, or treatment. Always consult with a qualified healthcare provider.
             </p>
-            <p className="text-slate-600 text-sm shrink-0">
-              &copy; {new Date().getFullYear()} CardioSense AI.
-            </p>
+            <div className="flex flex-col items-center md:items-end gap-3 text-right">
+              <a 
+                href="https://digitalheroesco.com" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="px-6 py-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white rounded-full font-bold text-xs transition-all shadow-[0_0_20px_rgba(225,29,72,0.3)] inline-block uppercase tracking-widest cursor-pointer transform hover:scale-105"
+              >
+                Built for Digital Heroes
+              </a>
+            </div>
+          </div>
+
+          <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
+            <div className="text-center sm:text-left">
+              <p className="font-bold text-slate-300 text-sm">Ranjita Naik</p>
+              <p className="text-slate-400">ranjitanaik062@gmail.com</p>
+            </div>
+            <div className="flex gap-6">
+              <a href="https://github.com/ranjitanaik-dev" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">GitHub</a>
+              <a href="https://linkedin.com/in/ranjita-naik" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">LinkedIn</a>
+            </div>
+            <div className="text-center sm:text-right">
+              <p>&copy; {new Date().getFullYear()} CardioSense AI. Built with ❤️</p>
+            </div>
           </div>
         </div>
       </footer>

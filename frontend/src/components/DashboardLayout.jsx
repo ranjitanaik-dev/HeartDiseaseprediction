@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { 
-  LayoutDashboard, HeartPulse, Activity, Stethoscope, 
-  LogOut, Menu, X, Sun, Moon 
+  LayoutDashboard, HeartPulse, History, FileText, Sparkles, 
+  HelpCircle, Settings as SettingsIcon, LogOut, Bell, Sun, Moon, Menu, X 
 } from 'lucide-react';
 
 export default function DashboardLayout() {
@@ -38,10 +38,13 @@ export default function DashboardLayout() {
   };
 
   const navLinks = [
-    { name: 'Dashboard Home', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
-    { name: 'Basic Health Check', path: '/predict/basic', icon: <HeartPulse className="w-5 h-5" /> },
-    { name: 'Advanced Analysis', path: '/predict/advanced', icon: <Activity className="w-5 h-5" /> },
-    { name: 'AI Symptom Analyzer', path: '/analyze', icon: <Stethoscope className="w-5 h-5" /> },
+    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
+    { name: 'Heart Prediction', path: '/predict', icon: <HeartPulse className="w-5 h-5" /> },
+    { name: 'Prediction History', path: '/history', icon: <History className="w-5 h-5" /> },
+    { name: 'Reports', path: '/reports', icon: <FileText className="w-5 h-5" /> },
+    { name: 'Health Tips', path: '/health-tips', icon: <Sparkles className="w-5 h-5" /> },
+    { name: 'FAQ', path: '/faq', icon: <HelpCircle className="w-5 h-5" /> },
+    { name: 'Settings', path: '/settings', icon: <SettingsIcon className="w-5 h-5" /> },
   ];
 
   return (
@@ -50,8 +53,8 @@ export default function DashboardLayout() {
       {/* Mobile Header */}
       <div className="md:hidden flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
         <div className="flex items-center gap-2 text-health-500 font-bold text-xl">
-          <HeartPulse className="w-6 h-6 fill-current" />
-          CardioSense
+          <HeartPulse className="w-6 h-6 fill-current animate-pulse text-rose-500" />
+          <span className="text-white">CardioSense</span>
         </div>
         <div className="flex items-center gap-2">
           <button 
@@ -75,7 +78,7 @@ export default function DashboardLayout() {
         flex
       `}>
         <div className="p-6 hidden md:flex items-center gap-2 text-health-500 font-bold text-xl border-b border-white/10">
-          <HeartPulse className="w-8 h-8 fill-current" />
+          <HeartPulse className="w-8 h-8 fill-current text-rose-500" />
           CardioSense AI
         </div>
 
@@ -86,23 +89,23 @@ export default function DashboardLayout() {
 
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {navLinks.map((link) => {
-            const isActive = location.pathname === link.path;
-            return (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`
-                  flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors
-                  ${isActive 
-                    ? 'bg-health-500/10 text-health-500' 
-                    : 'text-slate-400 hover:text-slate-50 hover:bg-white/5'}
-                `}
-              >
-                {link.icon}
-                {link.name}
-              </Link>
-            );
+            const isActive = location.pathname === link.path || (link.path === '/predict' && location.pathname.startsWith('/predict'));
+              return (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`
+                    flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors
+                    ${isActive 
+                      ? 'bg-health-500/10 text-health-500' 
+                      : 'text-slate-400 hover:text-slate-55 hover:bg-white/5'}
+                  `}
+                >
+                  {link.icon}
+                  {link.name}
+                </Link>
+              );
           })}
         </nav>
 
@@ -121,19 +124,37 @@ export default function DashboardLayout() {
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Desktop Header */}
         <header className="hidden md:flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/20 backdrop-blur-md sticky top-0 z-30">
-          <div className="text-xs text-slate-400 font-bold uppercase tracking-wider">CardioSense AI Health Suite</div>
+          <div className="text-sm text-slate-400 font-medium">
+            Welcome back, <span className="text-white font-bold">{user?.user_metadata?.full_name || 'User'}</span>
+          </div>
+          
           <div className="flex items-center gap-4">
+            {/* Dark Mode Toggle */}
             <button 
               onClick={toggleTheme}
-              className="p-2 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
+              className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors cursor-pointer"
               title="Toggle Theme"
             >
               {theme === 'light' ? <Moon className="w-4.5 h-4.5 text-rose-500" /> : <Sun className="w-4.5 h-4.5 text-yellow-500" />}
             </button>
-            <div className="h-4 w-px bg-white/10" />
-            <div className="flex flex-col text-right">
-              <span className="font-bold text-white text-sm leading-none">{user?.user_metadata?.full_name || 'User'}</span>
-              <span className="text-[10px] text-slate-400 font-semibold mt-1 leading-none">{user?.email}</span>
+
+            {/* Notifications */}
+            <div className="relative">
+              <button className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white transition-colors relative cursor-pointer">
+                <Bell className="w-4.5 h-4.5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
+              </button>
+            </div>
+
+            {/* User Profile */}
+            <div className="flex items-center gap-3 pl-2 border-l border-white/10">
+              <div className="w-9 h-9 rounded-full bg-rose-500/20 border border-rose-500/30 flex items-center justify-center text-rose-500 font-bold text-sm shadow-sm select-none">
+                {(user?.user_metadata?.full_name || user?.email || 'U').charAt(0).toUpperCase()}
+              </div>
+              <div className="flex flex-col text-left">
+                <span className="font-bold text-white text-xs leading-none">{user?.user_metadata?.full_name || 'User'}</span>
+                <span className="text-[9px] text-slate-400 font-semibold mt-1 leading-none">{user?.email}</span>
+              </div>
             </div>
           </div>
         </header>

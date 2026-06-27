@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { 
   LayoutDashboard, HeartPulse, History, FileText, Sparkles, 
   HelpCircle, Settings as SettingsIcon, LogOut, Bell, Sun, Moon, Menu, X,
-  ChevronDown, Calendar, Search, TrendingUp, Target, Activity
+  ChevronDown, Calendar, Search, TrendingUp, Target, Activity, User
 } from 'lucide-react';
 
 export default function DashboardLayout() {

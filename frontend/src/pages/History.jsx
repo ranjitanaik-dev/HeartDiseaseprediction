@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { History as HistoryIcon, Trash2, FileDown, Sparkles, AlertCircle, ShieldAlert } from 'lucide-react';
+import { History as HistoryIcon, Trash2, FileDown, ShieldAlert, GitCompare, ChevronRight, Activity } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generatePDFReport } from '../lib/pdfGenerator';
 
 export default function History() {
   const { user } = useAuth();
   const [history, setHistory] = useState([]);
+  
+  // Comparison state
+  const [compareIdA, setCompareIdA] = useState("");
+  const [compareIdB, setCompareIdB] = useState("");
 
   useEffect(() => {
     if (user?.uid) {
@@ -22,6 +26,9 @@ export default function History() {
     const updated = history.filter(item => item.id !== id);
     setHistory(updated);
     localStorage.setItem(historyKey, JSON.stringify(updated));
+    // Clear comparison selection if deleted
+    if (compareIdA === id) setCompareIdA("");
+    if (compareIdB === id) setCompareIdB("");
   };
 
   const handleClearHistory = () => {
@@ -29,6 +36,8 @@ export default function History() {
     const historyKey = `cardio_history_${user.uid}`;
     setHistory([]);
     localStorage.removeItem(historyKey);
+    setCompareIdA("");
+    setCompareIdB("");
   };
 
   const handleDownloadPDF = (record) => {
@@ -36,15 +45,33 @@ export default function History() {
     generatePDFReport(name, record);
   };
 
+  // Get selected comparison items
+  const recordA = history.find(r => r.id === compareIdA);
+  const recordB = history.find(r => r.id === compareIdB);
+
+  // Helper to compare values
+  const getDiffText = (valA, valB, lowerIsBetter = true) => {
+    const diff = Number((valB - valA).toFixed(1));
+    if (diff === 0) return { text: "No change", color: "text-slate-400" };
+    
+    const isImproved = lowerIsBetter ? diff < 0 : diff > 0;
+    const sign = diff > 0 ? "+" : "";
+    return {
+      text: `${sign}${diff}`,
+      color: isImproved ? "text-green-400 font-bold" : "text-red-400 font-bold",
+      isImproved
+    };
+  };
+
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in pb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black text-white flex items-center gap-3">
             <HistoryIcon className="text-health-500" />
             Prediction Assessment History
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Review, delete, and download PDF reports of your past health runs.</p>
+          <p className="text-slate-400 text-sm mt-1">Review, delete, and compare side-by-side details of your past health runs.</p>
         </div>
         {history.length > 0 && (
           <button 
@@ -56,6 +83,131 @@ export default function History() {
         )}
       </div>
 
+      {/* Prediction Comparison Widget */}
+      {history.length >= 2 && (
+        <div className="glass-card p-6 space-y-4">
+          <h3 className="text-md font-bold text-white flex items-center gap-2 border-b border-white/10 pb-2">
+            <GitCompare className="w-4.5 h-4.5 text-rose-500" /> Compare Health Reports
+          </h3>
+          
+          <div className="grid sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1.5">Select First Report (Base)</label>
+              <select 
+                className="w-full bg-[#0f172a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-rose-500 transition-colors"
+                value={compareIdA}
+                onChange={(e) => setCompareIdA(e.target.value)}
+              >
+                <option value="">-- Choose Report A --</option>
+                {history.map(h => (
+                  <option key={h.id} value={h.id}>{h.date} - {h.mode} ({h.riskLevel})</option>
+                ))}
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-[10px] uppercase font-bold text-slate-400 mb-1.5">Select Second Report (Comparison)</label>
+              <select 
+                className="w-full bg-[#0f172a]/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-slate-300 focus:outline-none focus:border-rose-500 transition-colors"
+                value={compareIdB}
+                onChange={(e) => setCompareIdB(e.target.value)}
+              >
+                <option value="">-- Choose Report B --</option>
+                {history.map(h => (
+                  <option key={h.id} value={h.id}>{h.date} - {h.mode} ({h.riskLevel})</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Comparison results */}
+          <AnimatePresence>
+            {recordA && recordB && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden border-t border-white/5 pt-4 mt-4"
+              >
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead>
+                      <tr className="border-b border-white/10 text-slate-500 font-bold">
+                        <th className="pb-2">Clinical Metric</th>
+                        <th className="pb-2">Report A (Base)</th>
+                        <th className="pb-2">Report B (Comparison)</th>
+                        <th className="pb-2 text-right">Progress / Difference</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr className="border-b border-white/5">
+                        <td className="py-2.5 font-bold text-white">Assessment Date</td>
+                        <td className="py-2.5 text-slate-300">{recordA.date}</td>
+                        <td className="py-2.5 text-slate-300">{recordB.date}</td>
+                        <td className="py-2.5 text-right text-slate-400 font-semibold">-</td>
+                      </tr>
+                      <tr className="border-b border-white/5">
+                        <td className="py-2.5 font-bold text-white">Health Score</td>
+                        <td className="py-2.5 text-emerald-400 font-bold">{recordA.healthScore} / 100</td>
+                        <td className="py-2.5 text-emerald-400 font-bold">{recordB.healthScore} / 100</td>
+                        <td className={`py-2.5 text-right ${getDiffText(recordA.healthScore, recordB.healthScore, false).color}`}>
+                          {getDiffText(recordA.healthScore, recordB.healthScore, false).text} pts
+                        </td>
+                      </tr>
+                      <tr className="border-b border-white/5">
+                        <td className="py-2.5 font-bold text-white">Risk Probability</td>
+                        <td className="py-2.5 text-rose-400 font-bold">{recordA.riskPercentage}%</td>
+                        <td className="py-2.5 text-rose-400 font-bold">{recordB.riskPercentage}%</td>
+                        <td className={`py-2.5 text-right ${getDiffText(recordA.riskPercentage, recordB.riskPercentage, true).color}`}>
+                          {getDiffText(recordA.riskPercentage, recordB.riskPercentage, true).text}%
+                        </td>
+                      </tr>
+                      <tr className="border-b border-white/5">
+                        <td className="py-2.5 font-bold text-white">Body Mass Index (BMI)</td>
+                        <td className="py-2.5 text-slate-300">{recordA.bmi} ({recordA.bmiCategory})</td>
+                        <td className="py-2.5 text-slate-300">{recordB.bmi} ({recordB.bmiCategory})</td>
+                        <td className={`py-2.5 text-right ${getDiffText(recordA.bmi, recordB.bmi, true).color}`}>
+                          {getDiffText(recordA.bmi, recordB.bmi, true).text}
+                        </td>
+                      </tr>
+                      <tr className="border-b border-white/5">
+                        <td className="py-2.5 font-bold text-white">Estimated Heart Age</td>
+                        <td className="py-2.5 text-slate-300">{recordA.heartAge} yrs</td>
+                        <td className="py-2.5 text-slate-300">{recordB.heartAge} yrs</td>
+                        <td className={`py-2.5 text-right ${getDiffText(recordA.heartAge, recordB.heartAge, true).color}`}>
+                          {getDiffText(recordA.heartAge, recordB.heartAge, true).text} yrs
+                        </td>
+                      </tr>
+                      {recordA.inputs?.trestbps !== undefined && recordB.inputs?.trestbps !== undefined && (
+                        <tr className="border-b border-white/5">
+                          <td className="py-2.5 font-bold text-white">Resting Blood Pressure</td>
+                          <td className="py-2.5 text-slate-300">{recordA.inputs.trestbps} mm Hg</td>
+                          <td className="py-2.5 text-slate-300">{recordB.inputs.trestbps} mm Hg</td>
+                          <td className={`py-2.5 text-right ${getDiffText(recordA.inputs.trestbps, recordB.inputs.trestbps, true).color}`}>
+                            {getDiffText(recordA.inputs.trestbps, recordB.inputs.trestbps, true).text} mm Hg
+                          </td>
+                        </tr>
+                      )}
+                      {recordA.inputs?.chol !== undefined && recordB.inputs?.chol !== undefined && (
+                        <tr className="border-b border-white/5">
+                          <td className="py-2.5 font-bold text-white">Serum Cholesterol</td>
+                          <td className="py-2.5 text-slate-300">{recordA.inputs.chol} mg/dl</td>
+                          <td className="py-2.5 text-slate-300">{recordB.inputs.chol} mg/dl</td>
+                          <td className={`py-2.5 text-right ${getDiffText(recordA.inputs.chol, recordB.inputs.chol, true).color}`}>
+                            {getDiffText(recordA.inputs.chol, recordB.inputs.chol, true).text} mg/dl
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* History table */}
       <AnimatePresence mode="wait">
         {history.length === 0 ? (
           <motion.div 
@@ -74,7 +226,7 @@ export default function History() {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="glass-card p-6"
+            className="glass-card p-6 animate-fade-in"
           >
             <div className="overflow-x-auto">
               <table className="w-full text-left">

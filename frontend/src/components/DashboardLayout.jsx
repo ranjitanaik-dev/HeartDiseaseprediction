@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { 
   LayoutDashboard, HeartPulse, History, FileText, Sparkles, 
   HelpCircle, Settings as SettingsIcon, LogOut, Bell, Sun, Moon, Menu, X,
-  ChevronDown, Calendar
+  ChevronDown, Calendar, Search, TrendingUp, Target, Activity
 } from 'lucide-react';
 
 export default function DashboardLayout() {
@@ -12,9 +12,17 @@ export default function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   // Theme state: read from local storage
   const [theme, setTheme] = useState(localStorage.getItem('cardio_theme') || 'dark');
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (theme === 'light') {
@@ -41,9 +49,12 @@ export default function DashboardLayout() {
   const navLinks = [
     { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="w-5 h-5" /> },
     { name: 'Heart Prediction', path: '/predict', icon: <HeartPulse className="w-5 h-5" /> },
+    { name: 'Health Analytics', path: '/health-analytics', icon: <TrendingUp className="w-5 h-5" /> },
     { name: 'Prediction History', path: '/history', icon: <History className="w-5 h-5" /> },
-    { name: 'Reports', path: '/reports', icon: <FileText className="w-5 h-5" /> },
-    { name: 'Health Tips', path: '/health-tips', icon: <Sparkles className="w-5 h-5" /> },
+    { name: 'Medical Reports', path: '/reports', icon: <FileText className="w-5 h-5" /> },
+    { name: 'Health Insights', path: '/health-insights', icon: <Sparkles className="w-5 h-5" /> },
+    { name: 'Health Goals', path: '/health-goals', icon: <Target className="w-5 h-5" /> },
+    { name: 'Health Tips', path: '/health-tips', icon: <Activity className="w-5 h-5" /> },
     { name: 'FAQ', path: '/faq', icon: <HelpCircle className="w-5 h-5" /> },
     { name: 'Settings', path: '/settings', icon: <SettingsIcon className="w-5 h-5" /> },
   ];
@@ -91,22 +102,22 @@ export default function DashboardLayout() {
         <nav className="flex-1 overflow-y-auto py-4 px-3 space-y-1">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.path || (link.path === '/predict' && location.pathname.startsWith('/predict'));
-              return (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`
-                    flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors
-                    ${isActive 
-                      ? 'bg-health-500/10 text-health-500' 
-                      : 'text-slate-400 hover:text-slate-55 hover:bg-white/5'}
-                  `}
-                >
-                  {link.icon}
-                  {link.name}
-                </Link>
-              );
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`
+                  flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-colors
+                  ${isActive 
+                    ? 'bg-health-500/10 text-health-500 font-semibold border-l-2 border-rose-500' 
+                    : 'text-slate-400 hover:text-slate-55 hover:bg-white/5'}
+                `}
+              >
+                {link.icon}
+                {link.name}
+              </Link>
+            );
           })}
         </nav>
 
@@ -125,14 +136,28 @@ export default function DashboardLayout() {
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Desktop Header */}
         <header className="hidden md:flex items-center justify-between p-4 border-b border-white/10 bg-slate-900/20 backdrop-blur-md sticky top-0 z-30">
-          <div className="text-sm text-slate-400 font-medium">
-            Welcome back, <span className="text-white font-bold">{user?.user_metadata?.full_name || 'User'}</span>
+          
+          {/* Quick Search */}
+          <div className="relative w-72">
+            <input 
+              type="text" 
+              placeholder="Search reports, metrics..." 
+              className="w-full bg-[#0f172a]/40 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-xs text-white focus:outline-none focus:border-rose-500 transition-all font-sans"
+              onChange={(e) => {
+                // Set keyword in local storage for reports filtering
+                localStorage.setItem('quick_search_query', e.target.value);
+                // Dispatch custom event to notify Reports component
+                window.dispatchEvent(new Event('quick_search_updated'));
+              }}
+            />
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
           </div>
           
           <div className="flex items-center gap-6">
             {/* Notifications */}
             <button className="p-2 text-slate-400 hover:text-white transition-colors relative cursor-pointer">
               <Bell className="w-5 h-5" />
+              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full animate-pulse" />
             </button>
 
             {/* Dark Mode Toggle */}
@@ -165,28 +190,19 @@ export default function DashboardLayout() {
             <div className="flex justify-end mb-2">
               <div className="flex items-center gap-2 bg-[#0f172a]/40 border border-white/5 px-4 py-2.5 rounded-2xl text-slate-300 text-sm font-semibold select-none font-sans shadow-sm">
                 <Calendar className="w-4.5 h-4.5 text-slate-400" />
-                <span>{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}</span>
+                <span>
+                  {currentTime.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })}
+                  {" • "}
+                  {currentTime.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                </span>
               </div>
             </div>
             <Outlet />
           </div>
 
-          {/* Required Layout Footer */}
-          <footer className="border-t border-white/10 p-6 bg-slate-900/30 text-center flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400 mt-8">
-            <div className="text-left">
-              <p className="font-bold text-white text-sm leading-tight">Ranjita Naik</p>
-              <p className="text-[11px] text-slate-400 mt-1">ranjitanaik062@gmail.com</p>
-            </div>
-            <div>
-              <a 
-                href="https://digitalheroesco.com" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="px-6 py-3 bg-gradient-to-r from-rose-600 to-rose-500 hover:from-rose-500 hover:to-rose-400 text-white rounded-full font-bold text-xs transition-all shadow-[0_0_20px_rgba(225,29,72,0.3)] inline-block uppercase tracking-widest cursor-pointer transform hover:scale-105"
-              >
-                Built for Digital Heroes
-              </a>
-            </div>
+          {/* Simple layout footer - no email, no heroes buttons */}
+          <footer className="border-t border-white/10 p-6 bg-slate-900/30 text-center text-xs text-slate-400 mt-8">
+            <p>&copy; {new Date().getFullYear()} CardioSense AI. All rights reserved. Confidential Patient Portal.</p>
           </footer>
         </main>
       </div>

@@ -448,11 +448,11 @@ export default function Home() {
               <p className="text-slate-400">ranjitanaik062@gmail.com</p>
             </div>
             <div className="flex gap-6">
-              <a href="https://github.com/ranjitanaik-dev" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">GitHub</a>
-              <a href="https://linkedin.com/in/ranjita-naik" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">LinkedIn</a>
+              <a href="https://github.com/ranjitanaik-dev/HeartDiseaseprediction" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">GitHub Repository</a>
+              <a href="https://linkedin.com/in/ranjita-naik" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">LinkedIn Profile</a>
             </div>
             <div className="text-center sm:text-right">
-              <p>&copy; {new Date().getFullYear()} CardioSense AI. Built with ❤️</p>
+              <p>Copyright &copy; {new Date().getFullYear()} CardioSense AI. Made with ❤️ using Machine Learning</p>
             </div>
           </div>
         </div>

@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { FileText, FileDown, FileCheck, Search, Filter, ShieldCheck, Download } from 'lucide-react';
+import { 
+  FileText, FileDown, FileCheck, Search, Filter, ShieldCheck, 
+  Download, Copy as CopyIcon, Trash2, ArrowUpDown
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generatePDFReport } from '../lib/pdfGenerator';
 
@@ -10,10 +13,11 @@ export default function Reports() {
   const [history, setHistory] = useState([]);
   const [filteredHistory, setFilteredHistory] = useState([]);
   
-  // Filters State
+  // Filters & Sorting State
   const [searchQuery, setSearchQuery] = useState("");
-  const [timeFilter, setTimeFilter] = useState("all"); // "all", "today", "week", "month"
-  const [riskFilter, setRiskFilter] = useState("all"); // "all", "high", "medium", "low"
+  const [timeFilter, setTimeFilter] = useState("all"); 
+  const [riskFilter, setRiskFilter] = useState("all"); 
+  const [sortBy, setSortBy] = useState("date-desc");
 
   // Load history
   useEffect(() => {
@@ -25,14 +29,13 @@ export default function Reports() {
     }
   }, [user]);
 
-  // Connect to Top Header Quick Search event listener
+  // Connect to Top Header Quick Search
   useEffect(() => {
     const handleQuickSearch = () => {
       const q = localStorage.getItem('quick_search_query') || "";
       setSearchQuery(q);
     };
     
-    // Check initial search value in local storage
     const initialQ = localStorage.getItem('quick_search_query');
     if (initialQ) {
       setSearchQuery(initialQ);
@@ -42,11 +45,11 @@ export default function Reports() {
     return () => window.removeEventListener('quick_search_updated', handleQuickSearch);
   }, []);
 
-  // Filter Logic
+  // Filter & Sort Logic
   useEffect(() => {
     let result = [...history];
 
-    // 1. Text Search Query (Report ID, Date, Method, Risk Level)
+    // 1. Text Search Query
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
       result = result.filter(item => 
@@ -81,12 +84,64 @@ export default function Reports() {
       });
     }
 
+    // 4. Sort Logic
+    if (sortBy === "date-desc") {
+      result.sort((a, b) => new Date(b.date) - new Date(a.date));
+    } else if (sortBy === "date-asc") {
+      result.sort((a, b) => new Date(a.date) - new Date(b.date));
+    } else if (sortBy === "health-desc") {
+      result.sort((a, b) => b.healthScore - a.healthScore);
+    } else if (sortBy === "health-asc") {
+      result.sort((a, b) => a.healthScore - b.healthScore);
+    } else if (sortBy === "risk-desc") {
+      result.sort((a, b) => b.riskPercentage - a.riskPercentage);
+    }
+
     setFilteredHistory(result);
-  }, [history, searchQuery, timeFilter, riskFilter]);
+  }, [history, searchQuery, timeFilter, riskFilter, sortBy]);
 
   const handleDownloadPDF = (record) => {
     const name = user?.displayName || user?.email?.split('@')[0] || "Guest Patient";
     generatePDFReport(name, record);
+  };
+
+  // Delete a report
+  const handleDeleteReport = (id) => {
+    if (!window.confirm("Are you sure you want to permanently delete this clinical report?")) return;
+    const historyKey = `cardio_history_${user.uid}`;
+    const updated = history.filter(r => r.id !== id);
+    setHistory(updated);
+    localStorage.setItem(historyKey, JSON.stringify(updated));
+  };
+
+  // Duplicate a report
+  const handleDuplicateReport = (record) => {
+    const historyKey = `cardio_history_${user.uid}`;
+    const duplicated = {
+      ...record,
+      id: `REP-${Math.random().toString(36).substr(2, 9).toUpperCase()}`,
+      date: new Date().toLocaleString(),
+      mode: `${record.mode} (Copy)`
+    };
+    const updated = [duplicated, ...history];
+    setHistory(updated);
+    localStorage.setItem(historyKey, JSON.stringify(updated));
+    addTimelineEvent(`Duplicated Report: ${record.mode}`, "info");
+  };
+
+  // Helper timeline logger
+  const addTimelineEvent = (title, type) => {
+    if (user?.uid) {
+      const timelineKey = `cardio_timeline_${user.uid}`;
+      const saved = JSON.parse(localStorage.getItem(timelineKey) || '[]');
+      const newEvent = {
+        id: `time-${Date.now()}`,
+        title,
+        type,
+        date: new Date().toLocaleString()
+      };
+      localStorage.setItem(timelineKey, JSON.stringify([newEvent, ...saved]));
+    }
   };
 
   // Export full history log as CSV
@@ -106,30 +161,31 @@ export default function Reports() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    addTimelineEvent("Exported clinical logs to CSV", "export");
   };
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 animate-fade-in pb-12">
+    <div className="max-w-7xl mx-auto space-y-8 animate-fade-in pb-12">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black text-white flex items-center gap-3">
             <FileText className="text-health-500" />
             Clinical Reports Browser
           </h1>
-          <p className="text-slate-400 text-sm mt-1">Search, filter, and export patient cardiovascular test records.</p>
+          <p className="text-slate-400 text-sm mt-1">Search, filter, duplicate, and export patient cardiovascular test records.</p>
         </div>
         {history.length > 0 && (
           <button 
             onClick={handleExportCSV}
-            className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/25 text-emerald-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2"
+            className="px-4 py-2 bg-emerald-500/10 hover:bg-emerald-500 border border-emerald-500/25 text-emerald-400 hover:text-white rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 animate-pulse"
           >
             <Download className="w-4 h-4" /> Export All (CSV)
           </button>
         )}
       </div>
 
-      {/* Advanced Filter Widgets */}
-      <div className="glass-card p-6 grid md:grid-cols-3 gap-6">
+      {/* Advanced Filter & Sorting Widgets */}
+      <div className="glass-card p-6 grid md:grid-cols-4 gap-6">
         <div>
           <label className="block text-[10px] uppercase font-bold text-slate-400 mb-2">Search Input</label>
           <div className="relative">
@@ -151,7 +207,7 @@ export default function Reports() {
               <button 
                 key={t}
                 onClick={() => setTimeFilter(t)}
-                className={`flex-1 py-1.5 rounded-lg font-bold transition-all uppercase text-[9px] ${timeFilter === t ? 'bg-health-500 text-white shadow-sm' : 'text-slate-450 hover:text-white'}`}
+                className={`flex-1 py-1.5 rounded-lg font-bold transition-all uppercase text-[9px] ${timeFilter === t ? 'bg-health-500 text-white shadow-sm' : 'text-slate-455 hover:text-white'}`}
               >
                 {t === 'week' ? '7 Days' : t === 'month' ? '30 Days' : t}
               </button>
@@ -166,11 +222,29 @@ export default function Reports() {
               <button 
                 key={r}
                 onClick={() => setRiskFilter(r)}
-                className={`flex-1 py-1.5 rounded-lg font-bold transition-all uppercase text-[9px] ${riskFilter === r ? 'bg-health-500 text-white shadow-sm' : 'text-slate-450 hover:text-white'}`}
+                className={`flex-1 py-1.5 rounded-lg font-bold transition-all uppercase text-[9px] ${riskFilter === r ? 'bg-health-500 text-white shadow-sm' : 'text-slate-455 hover:text-white'}`}
               >
                 {r}
               </button>
             ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-[10px] uppercase font-bold text-slate-400 mb-2">Sort Results</label>
+          <div className="relative">
+            <select 
+              className="w-full bg-[#0f172a]/40 border border-white/10 rounded-xl px-9 py-2.5 text-xs text-slate-300 focus:outline-none focus:border-rose-500 transition-colors"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+            >
+              <option value="date-desc">Newest First</option>
+              <option value="date-asc">Oldest First</option>
+              <option value="health-desc">Highest Health Score</option>
+              <option value="health-asc">Lowest Health Score</option>
+              <option value="risk-desc">Highest Risk Probability</option>
+            </select>
+            <ArrowUpDown className="absolute left-3 top-3 w-4 h-4 text-slate-400" />
           </div>
         </div>
       </div>
@@ -231,7 +305,7 @@ export default function Reports() {
                   </div>
                 </div>
 
-                <div className="flex gap-2 mt-2">
+                <div className="flex gap-2 mt-3 pt-3 border-t border-white/5">
                   <Link 
                     to={`/reports/view/${record.id}`}
                     className="flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold text-center transition-colors cursor-pointer"
@@ -240,10 +314,24 @@ export default function Reports() {
                   </Link>
                   <button 
                     onClick={() => handleDownloadPDF(record)}
-                    className="px-3 py-2 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition-colors cursor-pointer"
+                    className="p-2 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition-colors cursor-pointer"
                     title="Export PDF"
                   >
                     <FileDown className="w-4 h-4 text-rose-500" />
+                  </button>
+                  <button 
+                    onClick={() => handleDuplicateReport(record)}
+                    className="p-2 bg-slate-900 border border-white/10 hover:bg-slate-800 rounded-lg text-slate-350 hover:text-white transition-colors cursor-pointer"
+                    title="Duplicate Report"
+                  >
+                    <CopyIcon className="w-4 h-4 text-sky-400" />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteReport(record.id)}
+                    className="p-2 bg-red-500/10 border border-red-500/20 hover:bg-red-500 hover:border-red-500 rounded-lg text-red-400 hover:text-white transition-colors cursor-pointer"
+                    title="Delete Report"
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>

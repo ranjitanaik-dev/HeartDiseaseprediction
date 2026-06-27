@@ -246,7 +246,7 @@ export default function History() {
                     const patientName = user?.displayName || user?.email?.split('@')[0] || "Guest Patient";
                     return (
                       <tr key={record.id} className="border-b border-white/5 last:border-0 hover:bg-white/5 transition-colors">
-                        <td className="py-4 text-slate-400 font-mono text-[11px]">#{record.id.slice(-6).toUpperCase()}</td>
+                        <td className="py-4 text-slate-400 font-mono text-[11px]">#{String(record.id).slice(-6).toUpperCase()}</td>
                         <td className="py-4 text-slate-300 font-medium">{record.date}</td>
                         <td className="py-4 text-white font-semibold">{patientName}</td>
                         <td className="py-4">

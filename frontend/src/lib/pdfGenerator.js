@@ -120,7 +120,7 @@ export const generatePDFReport = (patientName, data) => {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(9);
   doc.setTextColor(100, 116, 139);
-  doc.text(`Patient ID: ${data.id?.slice(-6) || 'Guest'}  |  Assessed: ${data.date || timestamp}`, 18, 25);
+  doc.text(`Patient ID: ${String(data.id || '').slice(-6) || 'Guest'}  |  Assessed: ${data.date || timestamp}`, 18, 25);
   
   // Biomarkers table
   const clinicalRows = [];

@@ -282,7 +282,7 @@ export default function Reports() {
                     </div>
                     <div>
                       <h4 className="font-bold text-white text-xs leading-tight">{record.mode}</h4>
-                      <p className="text-[9px] text-slate-400 mt-1">ID: #{record.id.slice(-6)} • {record.date.split(' ')[0]}</p>
+                      <p className="text-[9px] text-slate-400 mt-1">ID: #{String(record.id).slice(-6)} • {record.date.split(' ')[0]}</p>
                     </div>
                   </div>
                   <span className={`px-2 py-0.5 rounded text-[8px] font-bold uppercase border ${record.riskLevel === 'High' ? 'bg-red-500/10 text-red-400 border-red-500/20' : record.riskLevel === 'Medium' ? 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20' : 'bg-green-500/10 text-emerald-400 border-green-500/20'}`}>

@@ -1,52 +1,30 @@
 @import "tailwindcss";
 
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #0f172a;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-}
-
-#root {
-  width: 100%;
-}
-
-@layer base {
-  body {
-    @apply bg-slate-950 text-slate-50;
+@layer utilities {
+  .glass-card {
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  }
+  
+  .glass-input {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
   }
 }
 
-.glass-card {
-  @apply bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
-/* ---------------------------------------------------- */
-/* LIGHT MODE STYLING SYSTEM                            */
-/* ---------------------------------------------------- */
-
-.light {
-  color-scheme: light;
-  color: #0f172a;
-  background-color: #f8fafc;
+.animate-fade-in {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Light Theme Overrides */
 .light,
 .light body,
 .light #root,
@@ -78,21 +56,28 @@ body {
   color: #0f172a !important;
 }
 
-.light .bg-slate-900\/20,
-.light .bg-slate-905\/80,
+/* Sidebar and navigation headers */
+.light aside,
+.light .bg-slate-950\/95,
 .light .bg-slate-905,
+.light .bg-slate-905\/80,
 .light .bg-\[\#0f172a\]\/40,
 .light .bg-\[\#0f172a\]\/60,
 .light .hover\:bg-\[\#0f172a\]\/60:hover,
 .light header div[class*="bg-\[\#0f172a\]"],
 .light header div[class*="bg-\#0f172a"],
-.light header div[class*="bg-slate-905"] {
+.light header div[class*="bg-slate-905"],
+.light .bg-slate-900\/20,
+.light .bg-slate-900\/50,
+.light .bg-slate-900\/50 span {
   background-color: #ffffff !important;
-  border-color: #e2e8f0 !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
   color: #0f172a !important;
 }
 
-.light header input {
+/* Navbar / Header search input fields */
+.light header input,
+.light nav input {
   background-color: #f1f5f9 !important;
   border-color: #cbd5e1 !important;
   color: #0f172a !important;
@@ -100,13 +85,6 @@ body {
 
 .light header input::placeholder {
   color: #94a3b8 !important;
-}
-
-.light .bg-slate-900\/50,
-.light .bg-slate-900\/50 span {
-  background-color: #ffffff !important;
-  border-color: #cbd5e1 !important;
-  color: #334155 !important;
 }
 
 .light .border-white\/10,
@@ -159,16 +137,7 @@ body {
   background-color: rgba(15, 23, 42, 0.07) !important;
 }
 
-.light aside {
-  background-color: #ffffff !important;
-  border-right-color: rgba(15, 23, 42, 0.12) !important;
-}
-
-.light aside p,
-.light aside span {
-  color: #334155 !important;
-}
-
+/* Sidebar navigation links */
 .light aside nav a {
   color: #475569 !important;
 }
@@ -216,6 +185,62 @@ body {
   background-color: rgba(15, 23, 42, 0.06) !important;
 }
 
+/* Homepage Overrides in light mode */
+.light section.bg-slate-900,
+.light section.bg-slate-900\/50,
+.light section.bg-slate-950,
+.light footer.bg-slate-950,
+.light footer {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light .bg-slate-900,
+.light .bg-slate-900\/50,
+.light .bg-slate-950\/50 {
+  background-color: #ffffff !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light .bg-slate-950 border p-8,
+.light div.bg-slate-950 {
+  background-color: #ffffff !important;
+  border-color: #e2e8f0 !important;
+}
+
+.light .bg-slate-900\/80 {
+  background-color: rgba(255, 255, 255, 0.92) !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light .bg-slate-800,
+.light .bg-slate-850 {
+  background-color: #f1f5f9 !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light .bg-gradient-to-tr.from-slate-800\/40.to-slate-900\/40 {
+  background-image: linear-gradient(to top right, rgba(255, 255, 255, 0.9), rgba(241, 245, 249, 0.9)) !important;
+  border-color: #cbd5e1 !important;
+}
+
+.light .bg-slate-950\/50 input,
+.light .bg-slate-950\/50 textarea,
+.light .bg-slate-950 input,
+.light .bg-slate-950 textarea {
+  background-color: #f8fafc !important;
+  border-color: #cbd5e1 !important;
+  color: #0f172a !important;
+}
+
+.light .bg-rose-500\/20,
+.light .bg-blue-500\/20,
+.light .bg-green-500\/20 {
+  background-color: rgba(225, 29, 72, 0.08) !important;
+}
+
+/* Print CSS Media */
 @media print {
   aside, header, nav, .no-print, button, .flex-col.sm\:flex-row {
     display: none !important;

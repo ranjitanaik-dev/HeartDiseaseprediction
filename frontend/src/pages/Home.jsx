@@ -5,7 +5,8 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { 
   HeartPulse, ShieldCheck, Activity, Brain, ArrowRight, CheckCircle2, 
   FileText, Lock, Users, Phone, Mail, MapPin, Stethoscope, 
-  ChevronRight, Heart, BarChart3, LineChart, MessageSquare
+  ChevronRight, Heart, BarChart3, LineChart, MessageSquare,
+  Globe, ExternalLink, User, Info
 } from 'lucide-react';
 
 export default function Home() {
@@ -411,26 +412,58 @@ export default function Home() {
       </section>
 
       {/* 9. FOOTER */}
-      <footer className="bg-slate-950 pt-16 pb-8 border-t border-white/10">
-        <div className="container mx-auto px-6">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-12">
-            <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-white">
-              <HeartPulse className="w-8 h-8 text-rose-500" />
-              CardioSense AI
+      <footer className="bg-slate-950 pt-16 pb-8 border-t border-white/10 select-none">
+        <div className="container mx-auto px-6 max-w-6xl">
+          
+          {/* Logo & Navigation Section */}
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 pb-8 border-b border-white/10">
+            <Link to="/" className="flex items-center gap-2.5 text-2xl font-bold text-white tracking-tight">
+              <HeartPulse className="w-8 h-8 text-rose-500 fill-rose-500/10 animate-pulse" />
+              CardioSense <span className="bg-gradient-to-r from-rose-400 to-pink-500 bg-clip-text text-transparent">AI</span>
             </Link>
-            <div className="flex gap-8">
-              <Link to="/login" className="text-slate-400 hover:text-rose-400 transition-colors">Login</Link>
-              <Link to="/register" className="text-slate-400 hover:text-rose-400 transition-colors">Register</Link>
-              <a href="#features" className="text-slate-400 hover:text-rose-400 transition-colors">Features</a>
-              <a href="#contact" className="text-slate-400 hover:text-rose-400 transition-colors">Contact</a>
+            <div className="flex flex-wrap justify-center gap-6 text-sm font-semibold">
+              <Link to="/login" className="text-slate-400 hover:text-rose-500 transition-colors">Login</Link>
+              <Link to="/register" className="text-slate-400 hover:text-rose-500 transition-colors">Register</Link>
+              <a href="#features" className="text-slate-400 hover:text-rose-500 transition-colors">Features</a>
+              <a href="#contact" className="text-slate-400 hover:text-rose-500 transition-colors">Contact</a>
             </div>
           </div>
           
-          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
-            <p className="text-slate-500 text-sm text-center md:text-left max-w-2xl">
-              <span className="font-bold text-slate-400">Medical Disclaimer:</span> This platform provides preventive insights using artificial intelligence and is strictly <span className="text-rose-500 font-medium">not a substitute for professional medical diagnosis</span>, advice, or treatment. Always consult with a qualified healthcare provider.
+          {/* Medical Disclaimer Card block */}
+          <div className="bg-slate-900/40 border border-white/5 rounded-2xl p-5 mb-10 flex gap-4 items-start shadow-sm">
+            <Info className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+            <p className="text-slate-400 text-xs leading-relaxed font-light">
+              <strong className="text-white font-bold">Medical Disclaimer:</strong> This platform provides preventive cardiovascular insights using machine learning and is strictly <span className="text-rose-500 font-semibold">not a substitute for professional medical diagnosis</span>, advice, clinical judgment, or treatment. Always consult with a qualified healthcare provider for clinical assessments.
             </p>
-            <div className="flex flex-col items-center md:items-end gap-3 text-right">
+          </div>
+
+          {/* User Details & Digital Heroes Row */}
+          <div className="grid md:grid-cols-2 gap-8 items-center pb-8 border-b border-white/5">
+            {/* Developer Metadata */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-6 text-xs text-slate-400 justify-start">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-slate-900 border border-white/10 flex items-center justify-center text-slate-300">
+                  <User className="w-4.5 h-4.5" />
+                </div>
+                <div>
+                  <p className="font-bold text-white text-sm">Ranjita Naik</p>
+                  <p className="text-slate-500 flex items-center gap-1.5 mt-0.5">
+                    <Mail className="w-3.5 h-3.5" /> ranjitanaik062@gmail.com
+                  </p>
+                </div>
+              </div>
+              <div className="flex gap-4 sm:border-l sm:border-white/10 sm:pl-6">
+                <a href="https://github.com/ranjitanaik-dev/HeartDiseaseprediction" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors font-semibold flex items-center gap-1.5">
+                  <Globe className="w-4 h-4" /> GitHub
+                </a>
+                <a href="https://linkedin.com/in/ranjita-naik" target="_blank" rel="noopener noreferrer" className="hover:text-rose-500 transition-colors font-semibold flex items-center gap-1.5">
+                  <ExternalLink className="w-4 h-4" /> LinkedIn
+                </a>
+              </div>
+            </div>
+
+            {/* Digital Heroes button CTA */}
+            <div className="flex justify-start md:justify-end">
               <a 
                 href="https://digitalheroesco.com" 
                 target="_blank" 
@@ -442,19 +475,12 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="border-t border-white/5 pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-            <div className="text-center sm:text-left">
-              <p className="font-bold text-slate-300 text-sm">Ranjita Naik</p>
-              <p className="text-slate-400">ranjitanaik062@gmail.com</p>
-            </div>
-            <div className="flex gap-6">
-              <a href="https://github.com/ranjitanaik-dev/HeartDiseaseprediction" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">GitHub Repository</a>
-              <a href="https://linkedin.com/in/ranjita-naik" target="_blank" rel="noopener noreferrer" className="hover:text-rose-400 transition-colors font-semibold">LinkedIn Profile</a>
-            </div>
-            <div className="text-center sm:text-right">
-              <p>Copyright &copy; {new Date().getFullYear()} CardioSense AI. Made with ❤️ using Machine Learning</p>
-            </div>
+          {/* Bottom Copyright */}
+          <div className="pt-6 flex flex-col sm:flex-row justify-between items-center gap-4 text-[10px] text-slate-500">
+            <p>Copyright &copy; {new Date().getFullYear()} CardioSense AI. All rights reserved.</p>
+            <p>Made with ❤️ using Machine Learning</p>
           </div>
+
         </div>
       </footer>
     </div>
